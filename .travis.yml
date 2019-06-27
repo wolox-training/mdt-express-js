@@ -26,8 +26,7 @@ install:
   - npm i
 
 before_script:
-  - CREATE USER $DB_USERNAME;
-  - psql -c "CREATE DATABASE $DB_NAME_TEST;" -U $DB_USERNAME
+  - psql -c "CREATE DATABASE $DB_NAME_TEST;" -U postgres
 
 script: 
   - npm run lint
