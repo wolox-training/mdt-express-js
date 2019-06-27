@@ -6,7 +6,12 @@ node_js:
 sudo: true
 
 env:
-  - CXX=g++-4.8 NODE_ENV=testing
+  - CXX=g++-4.8
+  - NODE_ENV=testing
+  - DB_USERNAME=wtraining
+  - DB_NAME_DEV=db_wtraining_dev
+  - DB_NAME_TEST=db_wtraining_test                  
+
 addons:
   apt:
     sources:
@@ -17,5 +22,16 @@ addons:
 services:
   - postgresql
 
+install:
+  - npm i
+
 before_script:
-  - psql -c "CREATE DATABASE bookstest;" -U postgres
+  - CREATE USER $DB_USERNAME;
+  - psql -c "CREATE DATABASE $DB_NAME_TEST;" -U $DB_USERNAME
+
+script: 
+  - npm run lint
+  - npm run test
+
+# after_script:
+#  - notificar en un canal de slack con un webhook

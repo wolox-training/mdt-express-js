@@ -1,6 +1,9 @@
 # WTraining
-
 WTraining
+
+# TravisCI
+Current Status
+[![Build Status](https://travis-ci.com/wolox-training/mdt-express-js.svg?branch=development)](https://travis-ci.com/wolox-training/mdt-express-js)
 
 ## First steps
 
