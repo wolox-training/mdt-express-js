@@ -4,20 +4,18 @@ const fetch = require('node-fetch'),
   logger = require('../logger'),
   { url } = config.common.albumsApi;
 
-exports.getAll = async source => {
-  try {
-    return await fetch(`${url}${source}`);
-  } catch (err) {
-    logger.error(err);
-    throw errors.albumsApiError(err);
-  }
-};
+exports.getAll = source =>
+  fetch(`${url}${source}`)
+    .then(res => res.json())
+    .catch(err => {
+      logger.error(err);
+      throw errors.albumsApiError(err);
+    });
 
-exports.getAlbumPhotos = async id => {
-  try {
-    return await fetch(`${url}/photos?albumId=${id}`);
-  } catch (err) {
-    logger.error(err);
-    throw errors.albumsApiError(err);
-  }
-};
+exports.getAlbumPhotos = id =>
+  fetch(`${url}/photos?albumId=${id}`)
+    .then(res => res.json())
+    .catch(err => {
+      logger.error(err);
+      throw errors.albumsApiError(err);
+    });
