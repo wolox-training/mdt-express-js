@@ -3,6 +3,9 @@ const internalError = (message, internalCode) => ({
   internalCode
 });
 
+exports.ALBUMS_API_ERROR = 'albums_api_error';
+exports.albumsApiError = message => internalError(message, exports.ALBUMS_API_ERROR);
+
 exports.DATABASE_ERROR = 'database_error';
 exports.databaseError = message => internalError(message, exports.DATABASE_ERROR);
 
