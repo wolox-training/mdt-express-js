@@ -16,14 +16,26 @@ module.exports = (sequelize, DataTypes) => {
       email: {
         allowNull: false,
         type: DataTypes.STRING,
-        unique: true
+        unique: true,
+        validate: {
+          isEmail: true,
+          contains: '@wolox.com.ar'
+        }
       },
       password: {
         allowNull: false,
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        validate: {
+          len: {
+            args: [8],
+            msg: 'Minimum 8 characters are required in the password'
+          }
+        }
       }
     },
-    {}
+    {
+      timestamps: false
+    }
   );
   return User;
 };

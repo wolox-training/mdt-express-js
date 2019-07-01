@@ -3,6 +3,9 @@ const internalError = (message, internalCode) => ({
   internalCode
 });
 
+exports.CONFLICT_ERROR = 'conflict_error';
+exports.userAlreadyExistsError = message => internalError(message, exports.CONFLICT_ERROR);
+
 exports.ALBUMS_API_ERROR = 'albums_api_error';
 exports.albumsApiError = message => internalError(message, exports.ALBUMS_API_ERROR);
 
