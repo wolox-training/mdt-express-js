@@ -17,6 +17,8 @@
     "lint-fix": "eslint \"**/*.js\" --fix --ignore-pattern ./.eslintrc.js",
     "precommit": "npm run lint-diff",
     "outdated": "npm outdated --depth 0",
+    "create-dev-db": "sudo -i -u postgres psql -c 'CREATE DATABASE db_wtraining_dev;' -U postgres",
+    "create-test-db": "sudo -i -u postgres psql -c 'CREATE DATABASE db_wtraining_test;' -U postgres",
     "pretest": "npm run lint",
     "prestart": "npm run lint",
     "migrations": "sequelize db:migrate",
