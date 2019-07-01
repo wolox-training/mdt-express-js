@@ -3,33 +3,27 @@ module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
     'user',
     {
-      id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
+      firstName: {
+        allowNull: false,
+        field: 'first_name',
+        type: DataTypes.STRING
       },
-      first_name: {
-        type: DataTypes.STRING,
-        required: true
-      },
-      last_name: {
-        type: DataTypes.STRING,
-        required: true
+      lastName: {
+        allowNull: false,
+        field: 'last_name',
+        type: DataTypes.STRING
       },
       email: {
+        allowNull: false,
         type: DataTypes.STRING,
-        required: true,
         unique: true
       },
       password: {
-        type: DataTypes.STRING,
-        required: true
+        allowNull: false,
+        type: DataTypes.STRING
       }
     },
     {}
   );
-  /* User.associate = function(models) {
-    // associations can be defined here
-  }; */
   return User;
 };
