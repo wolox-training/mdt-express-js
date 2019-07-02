@@ -3,10 +3,8 @@ const { User } = require('../models'),
   logger = require('../logger'),
   errors = require('../errors'),
   bcrypt = require('bcryptjs'),
+  { haveAllParams, isValidEmail } = require('../services/helpers'),
   { saltRounds } = config.common.usersApi;
-
-const isValidEmail = email => /[a-z0-9._%+-]+@wolox+\.[a-z]{2,3}(\.[a-z]{2})?/.test(email);
-const haveAllParams = user => user.firstName && user.lastName && user.email && user.password;
 
 exports.createUser = async data => {
   try {
