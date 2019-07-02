@@ -1,4 +1,4 @@
-const { users } = require('../models'),
+const { User } = require('../models'),
   logger = require('../logger'),
   errors = require('../errors'),
   bcrypt = require('bcryptjs');
@@ -6,7 +6,7 @@ const saltRounds = 10;
 
 exports.createUser = async data => {
   try {
-    let user = await users.findOne({
+    let user = await User.findOne({
       where: {
         email: data.email
       }
@@ -18,7 +18,7 @@ exports.createUser = async data => {
       return errors.userAlreadyExistsError(message);
     }
     const hash = await bcrypt.hash(data.password, saltRounds);
-    user = await users.create({
+    user = await User.create({
       firstName: data.firstName,
       lastName: data.lastName,
       email: data.email,

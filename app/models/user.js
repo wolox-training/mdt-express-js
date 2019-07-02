@@ -1,7 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
-    'users',
+    'User',
     {
       firstName: {
         allowNull: false,
@@ -34,7 +34,9 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     {
-      timestamps: false
+      timestamps: false,
+      freezeTableName: true,
+      tableName: 'users'
     }
   );
   return User;
