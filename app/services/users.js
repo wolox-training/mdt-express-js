@@ -4,6 +4,8 @@ const { users } = require('../models'),
   bcrypt = require('bcryptjs');
 const saltRounds = 10;
 
+const haveAllProps = user => user.firstName && user.lastName && user.email && user.password;
+
 exports.createUser = async data => {
   try {
     let user = await users.findOne({
@@ -15,7 +17,17 @@ exports.createUser = async data => {
     if (user) {
       message = `The user "${user.email}" already exists`;
       logger.error(message);
-      return errors.userAlreadyExistsError(message);
+      throw errors.userAlreadyExistsError(message);
+    }
+    if (!haveAllProps(data)) {
+      message = 'Validation error: firstName, lastName, email and password are required';
+      logger.error(message);
+      throw errors.paramsRequiredError(message);
+    }
+    if (data.password.length < 8) {
+      message = 'Validation error: minimum 8 characters are required in the password';
+      logger.error(message);
+      throw errors.passwordTooShortError(message);
     }
     const hash = await bcrypt.hash(data.password, saltRounds);
     user = await users.create({
