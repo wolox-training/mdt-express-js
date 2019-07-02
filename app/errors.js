@@ -4,7 +4,8 @@ const internalError = (message, internalCode) => ({
 });
 
 exports.BAD_REQUEST_ERROR = 'bad_request_error';
-exports.paramsRequiredError = message => internalError(message, exports.BAD_REQUEST_ERROR);
+exports.invalidEmailError = message => internalError(message, exports.BAD_REQUEST_ERROR);
+exports.parameterMissingError = message => internalError(message, exports.BAD_REQUEST_ERROR);
 exports.passwordTooShortError = message => internalError(message, exports.BAD_REQUEST_ERROR);
 
 exports.CONFLICT_ERROR = 'conflict_error';
