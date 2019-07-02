@@ -1,14 +1,15 @@
-const { users } = require('../models'),
+const { User } = require('../models'),
+  config = require('../../config/'),
   logger = require('../logger'),
   errors = require('../errors'),
-  bcrypt = require('bcryptjs');
-const saltRounds = 10;
+  bcrypt = require('bcryptjs'),
+  { saltRounds } = config.common.usersApi;
 
 const haveAllProps = user => user.firstName && user.lastName && user.email && user.password;
 
 exports.createUser = async data => {
   try {
-    let user = await users.findOne({
+    let user = await User.findOne({
       where: {
         email: data.email
       }
@@ -29,8 +30,8 @@ exports.createUser = async data => {
       logger.error(message);
       throw errors.passwordTooShortError(message);
     }
-    const hash = await bcrypt.hash(data.password, saltRounds);
-    user = await users.create({
+    const hash = await bcrypt.hash(data.password, Number(saltRounds));
+    user = await User.create({
       firstName: data.firstName,
       lastName: data.lastName,
       email: data.email,
