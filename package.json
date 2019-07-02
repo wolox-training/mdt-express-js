@@ -9,6 +9,7 @@
   "scripts": {
     "console": "node console.js",
     "cover": "NODE_ENV=testing jest --coverage --runInBand --forceExit test/app",
+    "pretest": "npm run lint && npm run drop-test-db && npm run create-test-db && npm run migrations-test",
     "test": "NODE_ENV=testing jest test/app --runInBand --forceExit",
     "test-inspect": "NODE_ENV=testing node --inspect --debug-brk jest test/app.spec.js",
     "eslint-check": "eslint --print-config .eslintrc.js --ignore-pattern ./.eslintrc.js | eslint-config-prettier-check",
@@ -19,7 +20,7 @@
     "outdated": "npm outdated --depth 0",
     "create-dev-db": "sudo -i -u postgres psql -c 'CREATE DATABASE db_wtraining_dev;' -U postgres",
     "create-test-db": "sudo -i -u postgres psql -c 'CREATE DATABASE db_wtraining_test;' -U postgres",
-    "pretest": "npm run lint",
+    "drop-test-db": "sudo -i -u postgres psql -c 'DROP DATABASE db_wtraining_test;' -U postgres",
     "prestart": "npm run lint",
     "migrations": "sequelize db:migrate",
     "migrations-test": "NODE_ENV=testing sequelize db:migrate",
