@@ -1,8 +1,9 @@
 const { User } = require('../models'),
+  config = require('../../config/'),
   logger = require('../logger'),
   errors = require('../errors'),
-  bcrypt = require('bcryptjs');
-const saltRounds = 10;
+  bcrypt = require('bcryptjs'),
+  { saltRounds } = config.common.usersApi;
 
 exports.createUser = async data => {
   try {
@@ -15,9 +16,9 @@ exports.createUser = async data => {
     if (user) {
       message = `The user "${user.email}" already exists`;
       logger.error(message);
-      return errors.userAlreadyExistsError(message);
+      throw errors.userAlreadyExistsError(message);
     }
-    const hash = await bcrypt.hash(data.password, saltRounds);
+    const hash = await bcrypt.hash(data.password, Number(saltRounds));
     user = await User.create({
       firstName: data.firstName,
       lastName: data.lastName,

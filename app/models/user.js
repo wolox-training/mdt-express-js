@@ -18,8 +18,12 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         unique: true,
         validate: {
-          isEmail: true,
-          contains: '@wolox.com.ar'
+          validateEmail(email) {
+            const regEx = /[a-z0-9._%+-]+@wolox+\.[a-z]{2,3}(\.[a-z]{2})?/;
+            if (!regEx.test(email)) {
+              throw new Error('invalid email');
+            }
+          }
         }
       },
       password: {
