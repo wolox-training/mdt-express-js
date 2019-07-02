@@ -1,7 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
-    'users',
+    'User',
     {
       firstName: {
         allowNull: false,
@@ -16,14 +16,27 @@ module.exports = (sequelize, DataTypes) => {
       email: {
         allowNull: false,
         type: DataTypes.STRING,
-        unique: true
+        unique: true,
+        validate: {
+          isEmail: true
+        }
       },
       password: {
         allowNull: false,
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        validate: {
+          len: {
+            args: [8],
+            msg: 'Minimum 8 characters are required in the password'
+          }
+        }
       }
     },
-    {}
+    {
+      timestamps: false,
+      freezeTableName: true,
+      tableName: 'users'
+    }
   );
   return User;
 };

@@ -3,6 +3,14 @@ const internalError = (message, internalCode) => ({
   internalCode
 });
 
+exports.BAD_REQUEST_ERROR = 'bad_request_error';
+exports.invalidEmailError = message => internalError(message, exports.BAD_REQUEST_ERROR);
+exports.parameterMissingError = message => internalError(message, exports.BAD_REQUEST_ERROR);
+exports.passwordTooShortError = message => internalError(message, exports.BAD_REQUEST_ERROR);
+
+exports.CONFLICT_ERROR = 'conflict_error';
+exports.userAlreadyExistsError = message => internalError(message, exports.CONFLICT_ERROR);
+
 exports.ALBUMS_API_ERROR = 'albums_api_error';
 exports.albumsApiError = message => internalError(message, exports.ALBUMS_API_ERROR);
 

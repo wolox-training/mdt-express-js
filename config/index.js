@@ -44,6 +44,9 @@ const config = {
     },
     albumsApi: {
       url: process.env.BASE_URL
+    },
+    usersApi: {
+      saltRounds: process.env.PASSWORD_SALT_ROUNDS
     }
   }
 };
