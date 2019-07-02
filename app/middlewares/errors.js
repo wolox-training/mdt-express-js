@@ -4,6 +4,7 @@ const errors = require('../errors'),
 const DEFAULT_STATUS_CODE = 500;
 
 const statusCodes = {
+  [errors.BAD_REQUEST_ERROR]: 400,
   [errors.ALBUMS_API_ERROR]: 404,
   [errors.CONFLICT_ERROR]: 409,
   [errors.DATABASE_ERROR]: 503,

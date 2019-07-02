@@ -5,6 +5,9 @@ const { User } = require('../models'),
   bcrypt = require('bcryptjs'),
   { saltRounds } = config.common.usersApi;
 
+const isValidEmail = email => /[a-z0-9._%+-]+@wolox+\.[a-z]{2,3}(\.[a-z]{2})?/.test(email);
+const haveAllParams = user => user.firstName && user.lastName && user.email && user.password;
+
 exports.createUser = async data => {
   try {
     let user = await User.findOne({
@@ -13,6 +16,21 @@ exports.createUser = async data => {
       }
     });
     let message = '';
+    if (!haveAllParams(data)) {
+      message = 'firstName, lastName, email and password are required fields';
+      logger.error(message);
+      throw errors.parameterMissingError(message);
+    }
+    if (!isValidEmail(data.email)) {
+      message = 'invalid email';
+      logger.error(message);
+      throw errors.invalidEmailError(message);
+    }
+    if (data.password.length < 8) {
+      message = 'password too short';
+      logger.error(message);
+      throw errors.passwordTooShortError(message);
+    }
     if (user) {
       message = `The user "${user.email}" already exists`;
       logger.error(message);
