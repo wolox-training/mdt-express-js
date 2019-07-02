@@ -3,32 +3,36 @@ const { User } = require('../models'),
   logger = require('../logger'),
   errors = require('../errors'),
   bcrypt = require('bcryptjs'),
+  { haveAllParams, isValidEmail } = require('../services/helpers'),
   { saltRounds } = config.common.usersApi;
-
-const haveAllProps = user => user.firstName && user.lastName && user.email && user.password;
 
 exports.createUser = async data => {
   try {
-    let user = await User.findOne({
-      where: {
-        email: data.email
-      }
-    });
     let message = '';
-    if (user) {
-      message = `The user "${user.email}" already exists`;
-      logger.error(message);
-      throw errors.userAlreadyExistsError(message);
-    }
-    if (!haveAllProps(data)) {
+    if (!haveAllParams(data)) {
       message = 'Validation error: firstName, lastName, email and password are required';
       logger.error(message);
       throw errors.paramsRequiredError(message);
+    }
+    if (!isValidEmail(data.email)) {
+      message = 'invalid email';
+      logger.error(message);
+      throw errors.invalidEmailError(message);
     }
     if (data.password.length < 8) {
       message = 'Validation error: minimum 8 characters are required in the password';
       logger.error(message);
       throw errors.passwordTooShortError(message);
+    }
+    let user = await User.findOne({
+      where: {
+        email: data.email
+      }
+    });
+    if (user) {
+      message = `The user "${user.email}" already exists`;
+      logger.error(message);
+      throw errors.userAlreadyExistsError(message);
     }
     const hash = await bcrypt.hash(data.password, Number(saltRounds));
     user = await User.create({
