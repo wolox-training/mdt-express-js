@@ -9,6 +9,7 @@
   "scripts": {
     "console": "node console.js",
     "cover": "NODE_ENV=testing jest --coverage --runInBand --forceExit test/app",
+    "pretest": "npm run lint",
     "test": "NODE_ENV=testing jest test/app --runInBand --forceExit",
     "test-inspect": "NODE_ENV=testing node --inspect --debug-brk jest test/app.spec.js",
     "eslint-check": "eslint --print-config .eslintrc.js --ignore-pattern ./.eslintrc.js | eslint-config-prettier-check",
@@ -17,7 +18,6 @@
     "lint-fix": "eslint \"**/*.js\" --fix --ignore-pattern ./.eslintrc.js",
     "precommit": "npm run lint-diff",
     "outdated": "npm outdated --depth 0",
-    "pretest": "npm run lint",
     "prestart": "npm run lint",
     "migrations": "sequelize db:migrate",
     "migrations-test": "NODE_ENV=testing sequelize db:migrate",
@@ -58,6 +58,7 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
+    "express-validator": "^6.1.1",
     "express-wolox-logger": "0.0.2",
     "jwt-simple": "^0.5.1",
     "node-fetch": "^2.6.0",
