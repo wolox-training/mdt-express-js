@@ -7,7 +7,7 @@ const paramValidation = (req, res, next) => {
   if (errors.isEmpty()) {
     next();
   } else {
-    next(invalidInputError);
+    next(invalidInputError(errors));
   }
 };
 

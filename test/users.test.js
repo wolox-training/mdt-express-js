@@ -1,5 +1,4 @@
-const { createUser } = require('../app/services/users'),
-  { userAlreadyExistsError, passwordTooShortError, paramsRequiredError } = require('../app/errors');
+const { User } = require('../app/models');
 
 const mockedUser = {
   firstName: 'Manuel',
@@ -9,28 +8,38 @@ const mockedUser = {
 };
 
 describe('users api tests', () => {
-  test('createUser with valid input and the user does not exist creates correctly', () =>
-    expect(createUser(mockedUser)).resolves.toMatch(/manuel.tuero@wolox.com.ar/));
+  test('createUser with valid input and the user does not exist creates correctly', async () => {
+    await expect(User.createWithHashedPassword(mockedUser)).resolves.toMatchObject({
+      firstName: 'Manuel',
+      lastName: 'Tuero',
+      email: 'manuel.tuero@wolox.com.ar'
+    });
+  });
 
-  test('createUser with existing user failed creation', () => {
-    createUser(mockedUser);
+  test('createUser with existing user failed creation', async () => {
+    await User.createWithHashedPassword(mockedUser);
     const userWithExistingEmail = {
       firstName: 'Foo',
       lastName: 'bar',
       email: 'manuel.tuero@wolox.com.ar',
       password: 'Wolox1189!'
     };
-    expect(createUser(userWithExistingEmail)).resolves.toThrow(userAlreadyExistsError);
+    await expect(User.createWithHashedPassword(userWithExistingEmail)).rejects.toEqual({
+      internalCode: 'database_error',
+      message: 'email must be unique'
+    });
   });
-
-  test('createUser with invalid password failed creation', () => {
+  /* test('createUser with invalid password failed creation', async () => {
     const userWithInvalidPassword = {
       firstName: 'Foo',
       lastName: 'bar',
       email: 'manuel.tuero@wolox.com.ar',
       password: 'Wolox'
     };
-    expect(createUser(userWithInvalidPassword)).resolves.toThrow(passwordTooShortError);
+    await expect(User.createWithHashedPassword(userWithInvalidPassword)).rejects.toEqual({
+      internalCode: 'database_error',
+      message: 'email must be unique'
+    });
   });
 
   test('createUser with missing lastName param failed creation', () => {
@@ -41,5 +50,5 @@ describe('users api tests', () => {
     };
 
     expect(createUser(userWithoutLastName)).resolves.toThrow(paramsRequiredError);
-  });
+  }); */
 });
