@@ -3,7 +3,7 @@ const { User } = require('../models'),
   logger = require('../logger'),
   errors = require('../errors'),
   bcrypt = require('bcryptjs'),
-  { haveAllParams, isValidEmail } = require('../services/helpers'),
+  { haveAllParams, isValidEmail } = require('../helpers'),
   { saltRounds } = config.common.usersApi;
 
 exports.createUser = async data => {
