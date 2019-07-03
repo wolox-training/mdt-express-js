@@ -1,4 +1,6 @@
-const { User } = require('../app/models');
+const { User } = require('../app/models'),
+  server = require('../app'),
+  request = require('supertest');
 
 const mockedUser = {
   firstName: 'Manuel',
@@ -29,26 +31,39 @@ describe('users api tests', () => {
       message: 'email must be unique'
     });
   });
-  /* test('createUser with invalid password failed creation', async () => {
-    const userWithInvalidPassword = {
-      firstName: 'Foo',
-      lastName: 'bar',
-      email: 'manuel.tuero@wolox.com.ar',
-      password: 'Wolox'
-    };
-    await expect(User.createWithHashedPassword(userWithInvalidPassword)).rejects.toEqual({
-      internalCode: 'database_error',
-      message: 'email must be unique'
-    });
+
+  test('createUser with invalid password failed creation', done => {
+    request(server)
+      .post('/users')
+      .send({
+        firstName: 'Manuel',
+        lastName: 'Tuero',
+        email: 'manuel.tuero@wolox.com.ar',
+        password: 'Wolox'
+      })
+      .expect(400)
+      .end(err => {
+        if (err) {
+          throw err;
+        }
+        done();
+      });
   });
 
-  test('createUser with missing lastName param failed creation', () => {
-    const userWithoutLastName = {
-      firstName: 'Foo',
-      email: 'manuel.tuero@wolox.com.ar',
-      password: 'Wolox1189!'
-    };
-
-    expect(createUser(userWithoutLastName)).resolves.toThrow(paramsRequiredError);
-  }); */
+  test('createUser with missing lastName param failed creation', done => {
+    request(server)
+      .post('/users')
+      .send({
+        firstName: 'Foo',
+        email: 'manuel.tuero@wolox.com.ar',
+        password: 'Wolox1189!'
+      })
+      .expect(400)
+      .end(err => {
+        if (err) {
+          throw err;
+        }
+        done();
+      });
+  });
 });
