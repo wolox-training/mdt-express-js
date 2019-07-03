@@ -1,4 +1,10 @@
 'use strict';
+const bcrypt = require('bcrypt'),
+  logger = require('../logger'),
+  { databaseError } = require('../errors'),
+  config = require('../../config'),
+  { saltRounds } = config.common.usersApi;
+
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
     'User',
@@ -33,10 +39,25 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     {
+      underscored: true,
       timestamps: false,
       freezeTableName: true,
       tableName: 'users'
     }
   );
+
+  User.createWithHashedPassword = user => {
+    user.password = bcrypt.hashSync(user.password, Number(saltRounds));
+    return User.create(user)
+      .then(userCreated => {
+        logger.info(`The new user "${userCreated.email}" was created successfully`);
+        return userCreated;
+      })
+      .catch(err => {
+        logger.error('Database error has occurred');
+        throw databaseError(err);
+      });
+  };
+
   return User;
 };

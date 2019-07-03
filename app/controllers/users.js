@@ -1,10 +1,10 @@
-const { createUser } = require('../services/users');
+const { User } = require('../models');
 
-exports.createUser = async (req, res, next) => {
+exports.createUser = async (req, res, _) => {
   try {
-    const message = await createUser(req.query);
-    res.status(201).send(message);
+    const user = await User.createWithHashedPassword(req.query);
+    res.status(201).send(user);
   } catch (err) {
-    next(err);
+    res.send(err);
   }
 };
