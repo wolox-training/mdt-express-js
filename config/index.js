@@ -47,7 +47,8 @@ const config = {
     },
     usersApi: {
       saltRounds: process.env.PASSWORD_SALT_ROUNDS
-    }
+    },
+    secret: process.env.TOKEN_SECRET
   }
 };
 

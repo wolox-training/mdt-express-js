@@ -12,8 +12,8 @@ module.exports = {
   },
   createUserToken: async (req, res, next) => {
     try {
-      const token = await generateUserToken(req.query);
-      res.status(201).send(token);
+      const result = await generateUserToken(req.query);
+      res.status(201).send(result);
     } catch (err) {
       next(err);
     }

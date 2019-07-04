@@ -1,6 +1,11 @@
 const { User } = require('../app/models'),
   server = require('../app'),
-  request = require('supertest');
+  { generateUserToken } = require('../app/services/users'),
+  request = require('supertest'),
+  config = require('../config'),
+  logger = require('../app/logger'),
+  jwt = require('jsonwebtoken'),
+  { secret } = config.common;
 
 const mockedUser = {
   firstName: 'Manuel',
@@ -97,4 +102,37 @@ describe('users api tests', () => {
         return done();
       });
   });
+
+  test('sign in with inexistent user fails token creation', () => {
+    const token = generateUserToken({
+      email: 'manuel.tuero@wolox.com.ar',
+      password: 'Wolox1189!'
+    });
+    return expect(token).rejects.toEqual({
+      internalCode: 'database_error',
+      message: 'Database Error'
+    });
+  });
+
+  /* test('sign in with existent user and valid credentials returns a new token', async () => {
+    const token = generateUserToken({
+      email: 'manuel.tuero@wolox.com.ar',
+      password: 'Wolox1189!'
+    });
+    const isValidToken = await jwt.verify(token, secret);
+    logger.info(`******************** isValidToken ${isValidToken}`);
+    request(server)
+      .post('/users/sessions')
+      .send({
+        email: 'manuel.tuero!@wolox.com.ar',
+        password: 'Wolox1189!'
+      })
+      .expect(201)
+      .end(err => {
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  }); */
 });
