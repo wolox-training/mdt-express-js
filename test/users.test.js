@@ -1,11 +1,11 @@
 const { User } = require('../app/models'),
   server = require('../app'),
   { generateUserToken } = require('../app/services/users'),
-  request = require('supertest'),
-  config = require('../config'),
-  logger = require('../app/logger'),
-  jwt = require('jsonwebtoken'),
-  { secret } = config.common;
+  request = require('supertest');
+// config = require('../config');
+// logger = require('../app/logger'),
+// jwt = require('jsonwebtoken'),
+// { secret } = config.common;
 
 const mockedUser = {
   firstName: 'Manuel',
