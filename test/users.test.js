@@ -10,7 +10,7 @@ const mockedUser = {
 };
 
 describe('users api tests', () => {
-  test('createUser with valid input and the user does not exist creates correctly', async () => {
+  test('create user with valid input and the user does not exist creates correctly', async () => {
     await expect(User.createWithHashedPassword(mockedUser)).resolves.toMatchObject({
       firstName: 'Manuel',
       lastName: 'Tuero',
@@ -18,7 +18,7 @@ describe('users api tests', () => {
     });
   });
 
-  test('createUser with existing user failed creation', async () => {
+  test('create user with existing user failed creation', async () => {
     await User.createWithHashedPassword(mockedUser);
     const userWithExistingEmail = {
       firstName: 'Foo',
@@ -32,7 +32,7 @@ describe('users api tests', () => {
     });
   });
 
-  test('createUser with invalid password failed creation', done => {
+  test('create user with invalid password failed creation', done => {
     request(server)
       .post('/users')
       .send({
@@ -50,7 +50,7 @@ describe('users api tests', () => {
       });
   });
 
-  test('createUser with missing lastName param failed creation', done => {
+  test('create user with missing lastName param failed creation', done => {
     request(server)
       .post('/users')
       .send({
@@ -64,6 +64,37 @@ describe('users api tests', () => {
           throw err;
         }
         done();
+      });
+  });
+
+  test('sign in with invalid password fails token creation', done => {
+    request(server)
+      .post('/users/sessions')
+      .send({
+        email: 'manuel.tuero@wolox.com.ar',
+        password: 'Wolox'
+      })
+      .expect(400)
+      .end(err => {
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
+
+  test('sign in with missing email fails token creation', done => {
+    request(server)
+      .post('/users/sessions')
+      .send({
+        password: 'Wolox1189!'
+      })
+      .expect(400)
+      .end(err => {
+        if (err) {
+          return done(err);
+        }
+        return done();
       });
   });
 });
