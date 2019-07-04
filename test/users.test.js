@@ -1,4 +1,6 @@
-const { createUser } = require('../app/services/users');
+const { User } = require('../app/models'),
+  server = require('../app'),
+  request = require('supertest');
 
 const mockedUser = {
   firstName: 'Manuel',
@@ -8,45 +10,60 @@ const mockedUser = {
 };
 
 describe('users api tests', () => {
-  test('createUser with valid input and the user does not exist creates correctly', () =>
-    expect(createUser(mockedUser)).resolves.toMatch(/manuel.tuero@wolox.com.ar/));
+  test('createUser with valid input and the user does not exist creates correctly', async () => {
+    await expect(User.createWithHashedPassword(mockedUser)).resolves.toMatchObject({
+      firstName: 'Manuel',
+      lastName: 'Tuero',
+      email: 'manuel.tuero@wolox.com.ar'
+    });
+  });
 
   test('createUser with existing user failed creation', async () => {
-    await createUser(mockedUser);
+    await User.createWithHashedPassword(mockedUser);
     const userWithExistingEmail = {
       firstName: 'Foo',
       lastName: 'bar',
       email: 'manuel.tuero@wolox.com.ar',
       password: 'Wolox1189!'
     };
-    await expect(createUser(userWithExistingEmail)).rejects.toEqual({
-      internalCode: 'conflict_error',
-      message: 'The user "manuel.tuero@wolox.com.ar" already exists'
+    await expect(User.createWithHashedPassword(userWithExistingEmail)).rejects.toEqual({
+      internalCode: 'database_error',
+      message: 'email must be unique'
     });
   });
 
-  test('createUser with invalid password failed creation', async () => {
-    const userWithInvalidPassword = {
-      firstName: 'Foo',
-      lastName: 'bar',
-      email: 'manuel.tuero@wolox.com.ar',
-      password: 'Wolox'
-    };
-    await expect(createUser(userWithInvalidPassword)).rejects.toEqual({
-      internalCode: 'bad_request_error',
-      message: 'Validation error: minimum 8 characters are required in the password'
-    });
+  test('createUser with invalid password failed creation', done => {
+    request(server)
+      .post('/users')
+      .send({
+        firstName: 'Manuel',
+        lastName: 'Tuero',
+        email: 'manuel.tuero@wolox.com.ar',
+        password: 'Wolox'
+      })
+      .expect(400)
+      .end(err => {
+        if (err) {
+          throw err;
+        }
+        done();
+      });
   });
 
-  test('createUser with missing lastName param failed creation', async () => {
-    const userWithoutLastName = {
-      firstName: 'Foo',
-      email: 'manuel.tuero@wolox.com.ar',
-      password: 'Wolox1189!'
-    };
-    await expect(createUser(userWithoutLastName)).rejects.toEqual({
-      internalCode: 'bad_request_error',
-      message: 'Validation error: firstName, lastName, email and password are required'
-    });
+  test('createUser with missing lastName param failed creation', done => {
+    request(server)
+      .post('/users')
+      .send({
+        firstName: 'Foo',
+        email: 'manuel.tuero@wolox.com.ar',
+        password: 'Wolox1189!'
+      })
+      .expect(400)
+      .end(err => {
+        if (err) {
+          throw err;
+        }
+        done();
+      });
   });
 });
