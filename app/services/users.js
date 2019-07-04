@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt'),
   { User } = require('../models'),
   errors = require('../errors'),
   config = require('../../config'),
-  { secret } = config.common;
+  { secret } = config.common.session;
 
 exports.generateUserToken = async data => {
   try {
@@ -15,7 +15,7 @@ exports.generateUserToken = async data => {
     if (user) {
       const matches = await bcrypt.compare(data.password, user.password);
       if (matches) {
-        const token = jwt.sign({ email: data.email }, secret);
+        const token = jwt.sign(JSON.parse(JSON.stringify({ email: user.email })), secret);
         return {
           message: 'Authentication successful!',
           token

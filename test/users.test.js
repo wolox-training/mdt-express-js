@@ -1,11 +1,10 @@
 const { User } = require('../app/models'),
-  server = require('../app'),
   { generateUserToken } = require('../app/services/users'),
-  request = require('supertest');
-// config = require('../config');
-// logger = require('../app/logger'),
-// jwt = require('jsonwebtoken'),
-// { secret } = config.common;
+  server = require('../app'),
+  request = require('supertest'),
+  config = require('../config'),
+  jwt = require('jsonwebtoken'),
+  { secret } = config.common.session;
 
 const mockedUser = {
   firstName: 'Manuel',
@@ -114,25 +113,14 @@ describe('users api tests', () => {
     });
   });
 
-  /* test('sign in with existent user and valid credentials returns a new token', async () => {
-    const token = generateUserToken({
-      email: 'manuel.tuero@wolox.com.ar',
-      password: 'Wolox1189!'
+  test('sign in with existent user and valid credentials returns a new token', async () => {
+    expect.assertions(1);
+    await expect(User.createWithHashedPassword(mockedUser)).resolves.toMatchObject({
+      firstName: 'Manuel',
+      lastName: 'Tuero',
+      email: 'manuel.tuero@wolox.com.ar'
     });
-    const isValidToken = await jwt.verify(token, secret);
-    logger.info(`******************** isValidToken ${isValidToken}`);
-    request(server)
-      .post('/users/sessions')
-      .send({
-        email: 'manuel.tuero!@wolox.com.ar',
-        password: 'Wolox1189!'
-      })
-      .expect(201)
-      .end(err => {
-        if (err) {
-          return done(err);
-        }
-        return done();
-      });
-  }); */
+    const token = jwt.verify(JSON.stringify({ email: 'manuel.tuero@wolox.com.ar' }, null, 2), secret);
+    await expect(token).resolves.toMatchObject({});
+  });
 });
