@@ -1,5 +1,5 @@
 const { User } = require('../app/models'),
-  { generateUserToken } = require('../app/services/users'),
+  { auth } = require('../app/services/users'),
   server = require('../app'),
   request = require('supertest'),
   config = require('../config'),
@@ -102,25 +102,18 @@ describe('users api tests', () => {
       });
   });
 
-  test('sign in with inexistent user fails token creation', () => {
-    const token = generateUserToken({
-      email: 'manuel.tuero@wolox.com.ar',
+  test('sign in with inexistent user fails token creation', () =>
+    auth({
+      email: 'unknownuser@wolox.com.ar',
       password: 'Wolox1189!'
-    });
-    return expect(token).rejects.toEqual({
-      internalCode: 'database_error',
-      message: 'Database Error'
-    });
-  });
+    }).catch(e => expect(e).toEqual({ internalCode: 'database_error', message: 'Database Error' })));
 
-  test('sign in with existent user and valid credentials returns a new token', async () => {
-    expect.assertions(1);
-    await expect(User.createWithHashedPassword(mockedUser)).resolves.toMatchObject({
-      firstName: 'Manuel',
-      lastName: 'Tuero',
-      email: 'manuel.tuero@wolox.com.ar'
-    });
-    const token = jwt.verify(JSON.stringify({ email: 'manuel.tuero@wolox.com.ar' }, null, 2), secret);
-    await expect(token).resolves.toMatchObject({});
-  });
+  test('sign in with existent user and valid credentials returns a new token', () =>
+    User.createWithHashedPassword(mockedUser)
+      .then(user => auth({ email: user.email, password: mockedUser.password }))
+      .then(result => {
+        jwt.verify(result.token, secret, (err, decoded) => {
+          expect(decoded.email).toEqual('manuel.tuero@wolox.com.ar');
+        });
+      }));
 });

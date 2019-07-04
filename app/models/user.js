@@ -47,8 +47,8 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   User.createWithHashedPassword = user => {
-    user.password = bcrypt.hashSync(user.password, Number(saltRounds));
-    return User.create(user)
+    const hashedPassword = bcrypt.hashSync(user.password, Number(saltRounds));
+    return User.create({ ...user, password: hashedPassword })
       .then(userCreated => {
         logger.info(`The new user "${userCreated.email}" was created successfully`);
         return userCreated;
