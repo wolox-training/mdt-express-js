@@ -122,4 +122,18 @@ describe('users api tests', () => {
           expect(decoded.email).toEqual('manuel.tuero@wolox.com.ar');
         });
       }));
+
+  /* test('get users with no auth returns a forbidden error', done => {
+    expect.assertions(1);
+    return request(server)
+      .get('/users')
+      .send({ token: 'invalid token' })
+      .expect(403)
+      .end(err => {
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });*/
 });
