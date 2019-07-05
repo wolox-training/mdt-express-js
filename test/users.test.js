@@ -1,6 +1,10 @@
 const { User } = require('../app/models'),
+  { auth } = require('../app/services/users'),
   server = require('../app'),
-  request = require('supertest');
+  request = require('supertest'),
+  config = require('../config'),
+  jwt = require('jsonwebtoken'),
+  { secret } = config.common.session;
 
 const mockedUser = {
   firstName: 'Manuel',
@@ -10,15 +14,16 @@ const mockedUser = {
 };
 
 describe('users api tests', () => {
-  test('createUser with valid input and the user does not exist creates correctly', async () => {
-    await expect(User.createWithHashedPassword(mockedUser)).resolves.toMatchObject({
-      firstName: 'Manuel',
-      lastName: 'Tuero',
-      email: 'manuel.tuero@wolox.com.ar'
-    });
-  });
+  test('create user with valid input and the user does not exist creates correctly', () =>
+    User.createWithHashedPassword(mockedUser).then(user =>
+      expect(user).toMatchObject({
+        firstName: 'Manuel',
+        lastName: 'Tuero',
+        email: 'manuel.tuero@wolox.com.ar'
+      })
+    ));
 
-  test('createUser with existing user failed creation', async () => {
+  test('create user with existing user failed creation', async () => {
     await User.createWithHashedPassword(mockedUser);
     const userWithExistingEmail = {
       firstName: 'Foo',
@@ -32,7 +37,7 @@ describe('users api tests', () => {
     });
   });
 
-  test('createUser with invalid password failed creation', done => {
+  test('create user with invalid password failed creation', done => {
     request(server)
       .post('/users')
       .send({
@@ -50,7 +55,7 @@ describe('users api tests', () => {
       });
   });
 
-  test('createUser with missing lastName param failed creation', done => {
+  test('create user with missing lastName param failed creation', done => {
     request(server)
       .post('/users')
       .send({
@@ -66,4 +71,55 @@ describe('users api tests', () => {
         done();
       });
   });
+
+  test('sign in with invalid password fails token creation', done => {
+    request(server)
+      .post('/users/sessions')
+      .send({
+        email: 'manuel.tuero@wolox.com.ar',
+        password: 'Wolox'
+      })
+      .expect(400)
+      .end(err => {
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
+
+  test('sign in with missing email fails token creation', done => {
+    request(server)
+      .post('/users/sessions')
+      .send({
+        password: 'Wolox1189!'
+      })
+      .expect(400)
+      .end(err => {
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
+
+  test('sign in with inexistent user fails token creation', () =>
+    auth({
+      email: 'unknownuser@wolox.com.ar',
+      password: 'Wolox1189!'
+    }).catch(e =>
+      expect(e).toEqual({
+        internalCode: 'database_error',
+        message: 'Database Error'
+      })
+    ));
+
+  test('sign in with existent user and valid credentials returns a new token', () =>
+    User.createWithHashedPassword(mockedUser)
+      .then(user => auth({ email: user.email, password: mockedUser.password }))
+      .then(result => {
+        jwt.verify(result.token, secret, (err, decoded) => {
+          expect(decoded.email).toEqual('manuel.tuero@wolox.com.ar');
+        });
+      }));
 });

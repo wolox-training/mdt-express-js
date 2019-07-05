@@ -3,6 +3,9 @@ const internalError = (message, internalCode) => ({
   internalCode
 });
 
+exports.FORBIDDEN_ERROR = 'forbidden_error';
+exports.forbiddenError = message => internalError(message, exports.FORBIDDEN_ERROR);
+
 exports.BAD_REQUEST_ERROR = 'bad_request_error';
 exports.invalidInputError = message => internalError(message, exports.BAD_REQUEST_ERROR);
 

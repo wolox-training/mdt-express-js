@@ -5,6 +5,7 @@ const DEFAULT_STATUS_CODE = 500;
 
 const statusCodes = {
   [errors.BAD_REQUEST_ERROR]: 400,
+  [errors.FORBIDDEN_ERROR]: 403,
   [errors.ALBUMS_API_ERROR]: 404,
   [errors.DATABASE_ERROR]: 503,
   [errors.DEFAULT_ERROR]: 500

@@ -13,14 +13,30 @@ const paramValidation = (req, res, next) => {
 
 exports.userParamsValidations = [
   check('firstName')
-    .isLength({ min: 1 })
+    .exists()
     .withMessage('firstName required'),
   check('lastName')
-    .isLength({ min: 1 })
+    .exists()
     .withMessage('lastName required'),
   check('password')
     .isLength({ min: 8 })
     .withMessage('password must contain more than 8 characters'),
+  check('email')
+    .isEmail()
+    .withMessage('invalid email')
+    .custom(email => {
+      if (!isValidEmail(email)) {
+        throw new Error('Email is not from wolox domain');
+      }
+      return true;
+    }),
+  paramValidation
+];
+
+exports.sessionParamsValidations = [
+  check('password')
+    .isLength({ min: 8 })
+    .withMessage('Password must contain more than 8 characters.'),
   check('email')
     .isEmail()
     .withMessage('invalid email')
