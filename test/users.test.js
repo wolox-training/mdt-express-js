@@ -14,13 +14,14 @@ const mockedUser = {
 };
 
 describe('users api tests', () => {
-  test('create user with valid input and the user does not exist creates correctly', async () => {
-    await expect(User.createWithHashedPassword(mockedUser)).resolves.toMatchObject({
-      firstName: 'Manuel',
-      lastName: 'Tuero',
-      email: 'manuel.tuero@wolox.com.ar'
-    });
-  });
+  test('create user with valid input and the user does not exist creates correctly', () =>
+    User.createWithHashedPassword(mockedUser).then(user =>
+      expect(user).toMatchObject({
+        firstName: 'Manuel',
+        lastName: 'Tuero',
+        email: 'manuel.tuero@wolox.com.ar'
+      })
+    ));
 
   test('create user with existing user failed creation', async () => {
     await User.createWithHashedPassword(mockedUser);
@@ -106,7 +107,12 @@ describe('users api tests', () => {
     auth({
       email: 'unknownuser@wolox.com.ar',
       password: 'Wolox1189!'
-    }).catch(e => expect(e).toEqual({ internalCode: 'database_error', message: 'Database Error' })));
+    }).catch(e =>
+      expect(e).toEqual({
+        internalCode: 'database_error',
+        message: 'Database Error'
+      })
+    ));
 
   test('sign in with existent user and valid credentials returns a new token', () =>
     User.createWithHashedPassword(mockedUser)
