@@ -59,5 +59,10 @@ module.exports = (sequelize, DataTypes) => {
       });
   };
 
+  User.getAll = () =>
+    User.findAll()
+      .then(users => users)
+      .catch(err => databaseError(err));
+
   return User;
 };

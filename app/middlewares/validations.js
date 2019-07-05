@@ -14,13 +14,18 @@ const paramValidation = (req, res, next) => {
   }
 };
 
-const checkToken = req => {
-  console.log(req.body);
-  jwt.verify(req.query.token, secret, err => {
-    if (err) {
-      throw forbiddenError(err.message);
-    }
-  });
+const checkToken = (req, res, next) => {
+  const token = req.headers.authorization;
+  if (token) {
+    jwt.verify(token, secret, (err, decoded) => {
+      if (err) {
+        throw forbiddenError(err.message);
+      } else {
+        req.decoded = decoded;
+        next();
+      }
+    });
+  }
 };
 
 exports.userParamsValidations = [

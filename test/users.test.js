@@ -1,10 +1,7 @@
 const { User } = require('../app/models'),
   { auth } = require('../app/services/users'),
   server = require('../app'),
-  request = require('supertest'),
-  config = require('../config'),
-  jwt = require('jsonwebtoken'),
-  { secret } = config.common.session;
+  request = require('supertest');
 
 const mockedUser = {
   firstName: 'Manuel',
@@ -114,26 +111,24 @@ describe('users api tests', () => {
       })
     ));
 
-  test('sign in with existent user and valid credentials returns a new token', () =>
+  test('getAll with one user returns all users', () =>
     User.createWithHashedPassword(mockedUser)
-      .then(user => auth({ email: user.email, password: mockedUser.password }))
-      .then(result => {
-        jwt.verify(result.token, secret, (err, decoded) => {
-          expect(decoded.email).toEqual('manuel.tuero@wolox.com.ar');
-        });
-      }));
+      .then(user => user)
+      .then(() => User.getAll())
+      .then(users => expect(users.length).toEqual(1)));
 
-  /* test('get users with no auth returns a forbidden error', done => {
-    expect.assertions(1);
-    return request(server)
-      .get('/users')
-      .send({ token: 'invalid token' })
-      .expect(403)
-      .end(err => {
-        if (err) {
-          return done(err);
-        }
-        return done();
-      });
-  });*/
+  test('get users with no auth returns a forbidden error', () =>
+    User.createWithHashedPassword(mockedUser)
+      .then(() =>
+        auth({
+          email: 'manuel.tuero@wolox.com.ar',
+          password: 'Wolox1189!'
+        })
+      )
+      .then(result =>
+        request(server)
+          .get('/users')
+          .set({ Authorization: result.token })
+          .expect(200)
+      ));
 });
