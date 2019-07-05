@@ -117,7 +117,7 @@ describe('users api tests', () => {
       .then(() => User.getAll())
       .then(users => expect(users.length).toEqual(1)));
 
-  test('get users with no auth returns a forbidden error', () =>
+  test('checkToken with jwt returns the users list', () =>
     User.createWithHashedPassword(mockedUser)
       .then(() =>
         auth({
