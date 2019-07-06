@@ -131,4 +131,15 @@ describe('users api tests', () => {
           .set({ Authorization: result.token })
           .expect(200)
       ));
+
+  test('createUserAdmin without jwt returns an error', done =>
+    request(server)
+      .post('/admin/users')
+      .expect(403)
+      .end(err => {
+        if (err) {
+          return done(err);
+        }
+        return done();
+      }));
 });
