@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt'),
   logger = require('../logger'),
   { databaseError } = require('../errors'),
   config = require('../../config'),
+  { paginate } = require('../helpers'),
   { saltRounds } = config.common.usersApi;
 
 module.exports = (sequelize, DataTypes) => {
@@ -59,10 +60,11 @@ module.exports = (sequelize, DataTypes) => {
       });
   };
 
-  User.getAll = () =>
-    User.findAll()
+  User.getAll = data =>
+    User.findAll({
+      ...paginate(data)
+    })
       .then(users => users)
       .catch(err => databaseError(err));
-
   return User;
 };

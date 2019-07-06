@@ -114,7 +114,7 @@ describe('users api tests', () => {
   test('getAll with one user returns all users', () =>
     User.createWithHashedPassword(mockedUser)
       .then(user => user)
-      .then(() => User.getAll())
+      .then(() => User.getAll({ page: 0, pageSize: 1 }))
       .then(users => expect(users.length).toEqual(1)));
 
   test('checkToken with jwt returns the users list', () =>
