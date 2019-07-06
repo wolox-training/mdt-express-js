@@ -1,5 +1,5 @@
 const { User } = require('../models');
-const { auth } = require('../services/users.js');
+const { auth, createUserAdmin } = require('../services/users.js');
 
 exports.createUser = (req, res, next) =>
   User.createWithHashedPassword(req.query)
@@ -15,3 +15,9 @@ exports.getUsers = (req, res, next) =>
   User.getAll(req.query)
     .then(users => res.status(200).send(users))
     .catch(next);
+
+exports.createUserAdmin = (req, res, next) => {
+  createUserAdmin(req.query)
+    .then(admin => res.status(201).send(admin))
+    .catch(next);
+};

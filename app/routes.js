@@ -1,6 +1,6 @@
 const { healthCheck } = require('./controllers/healthCheck');
 const { getAlbums, getAlbumPhotos } = require('./controllers/albums');
-const { createUser, login, getUsers } = require('./controllers/users');
+const { createUser, login, getUsers, createUserAdmin } = require('./controllers/users');
 const {
   userParamsValidations,
   sessionParamsValidations,
@@ -15,4 +15,5 @@ exports.init = app => {
   app.post('/users', userParamsValidations, createUser);
   app.get('/users', authValidations, getUsers);
   app.post('/users/sessions', sessionParamsValidations, login);
+  app.post('/admin/users', [...authValidations, ...userParamsValidations], createUserAdmin);
 };

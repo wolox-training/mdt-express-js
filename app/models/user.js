@@ -37,6 +37,11 @@ module.exports = (sequelize, DataTypes) => {
             msg: 'Minimum 8 characters are required in the password'
           }
         }
+      },
+      admin: {
+        allowNull: false,
+        defaultValue: false,
+        type: DataTypes.BOOLEAN
       }
     },
     {

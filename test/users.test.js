@@ -104,10 +104,10 @@ describe('users api tests', () => {
     auth({
       email: 'unknownuser@wolox.com.ar',
       password: 'Wolox1189!'
-    }).catch(e =>
-      expect(e).toEqual({
-        internalCode: 'database_error',
-        message: 'Database Error'
+    }).then(result =>
+      expect(result).toEqual({
+        message: 'Incorrect username or password',
+        internalCode: 'forbidden_error'
       })
     ));
 
