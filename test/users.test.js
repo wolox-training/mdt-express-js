@@ -117,7 +117,24 @@ describe('users api tests', () => {
       .then(() => User.getAll({ page: 0, pageSize: 1 }))
       .then(users => expect(users.length).toEqual(1)));
 
-  test('checkToken with jwt returns the users list', () =>
+  test('checkToken with invalid jwt returns the users list', () =>
+    User.createWithHashedPassword(mockedUser)
+      .then(() =>
+        auth({
+          email: 'manuel.tuero@wolox.com.ar',
+          password: 'Wolox1189!'
+        })
+      )
+      .then(() =>
+        request(server)
+          .get('/users')
+          .set('Authorization', 'a.invalid.token')
+          .then(response =>
+            expect(response.text).toEqual('{"message":"invalid token","internal_code":"forbidden_error"}')
+          )
+      ));
+
+  test('checkToken with valid jwt returns the users list', () =>
     User.createWithHashedPassword(mockedUser)
       .then(() =>
         auth({
@@ -128,7 +145,7 @@ describe('users api tests', () => {
       .then(result =>
         request(server)
           .get('/users')
-          .set({ Authorization: result.token })
-          .expect(200)
+          .set('Authorization', result.token)
+          .then(response => expect(response.body.length).toEqual(1))
       ));
 });
