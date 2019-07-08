@@ -29,3 +29,9 @@ script:
   - npm run lint
   - npm run migrations-test
   - npm run test
+
+deploy:
+  provider: heroku
+  on: heroku
+  api_key:
+    secure: 255d3ffd-197d-4012-8b96-dd0628f90ef3
