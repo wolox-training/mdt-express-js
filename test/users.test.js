@@ -156,4 +156,19 @@ describe('users api tests', () => {
       .then(response =>
         expect(response.text).toEqual('{"message":"jwt must be provided","internal_code":"forbidden_error"}')
       ));
+
+  test('createUserAdmin with jwt and missing params returns bad request error', () =>
+    User.createWithHashedPassword(mockedUser)
+      .then(() =>
+        auth({
+          email: 'manuel.tuero@wolox.com.ar',
+          password: 'Wolox1189!'
+        })
+      )
+      .then(result =>
+        request(server)
+          .post('/admin/users')
+          .set('Authorization', result.token)
+          .then(response => expect(response.body.internal_code).toEqual('bad_request_error'))
+      ));
 });
