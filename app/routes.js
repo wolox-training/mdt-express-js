@@ -1,7 +1,7 @@
-const { healthCheck } = require('./controllers/healthCheck');
-const { getAlbums, getAlbumPhotos } = require('./controllers/albums');
-const { createUser, login, getUsers } = require('./controllers/users');
-const { userParamsValidations, sessionParamsValidations, checkToken } = require('./middlewares/validations');
+const { healthCheck } = require('./controllers/healthCheck'),
+  { getAlbums, getAlbumPhotos } = require('./controllers/albums'),
+  { createUser, login, getUsers } = require('./controllers/users'),
+  { userParamsValidations, sessionParamsValidations, checkToken } = require('./middlewares/validations');
 
 exports.init = app => {
   app.get('/health', healthCheck);
