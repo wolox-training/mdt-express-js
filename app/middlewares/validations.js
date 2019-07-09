@@ -1,6 +1,9 @@
-const { invalidInputError } = require('../errors');
-const { isValidEmail } = require('../helpers');
-const { check, validationResult } = require('express-validator');
+const { check, validationResult } = require('express-validator'),
+  jwt = require('jsonwebtoken'),
+  { invalidInputError, forbiddenError } = require('../errors'),
+  { isValidEmail } = require('../helpers'),
+  config = require('../../config'),
+  { secret } = config.common.session;
 
 const paramValidation = (req, res, next) => {
   const errors = validationResult(req);
@@ -9,6 +12,18 @@ const paramValidation = (req, res, next) => {
   } else {
     next(invalidInputError(errors));
   }
+};
+
+exports.checkToken = (req, res, next) => {
+  const token = req.headers.authorization;
+  jwt.verify(token, secret, (err, decoded) => {
+    if (err) {
+      throw forbiddenError(err.message);
+    } else {
+      req.decoded = decoded;
+      next();
+    }
+  });
 };
 
 exports.userParamsValidations = [

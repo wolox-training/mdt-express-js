@@ -10,3 +10,8 @@ exports.login = (req, res, next) =>
   auth(req.query)
     .then(result => res.status(201).send(result))
     .catch(next);
+
+exports.getUsers = (req, res, next) =>
+  User.getAll(req.query)
+    .then(users => res.status(200).send(users))
+    .catch(next);
