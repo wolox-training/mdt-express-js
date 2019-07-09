@@ -14,7 +14,7 @@ const paramValidation = (req, res, next) => {
   }
 };
 
-const checkToken = (req, res, next) => {
+exports.checkToken = (req, res, next) => {
   const token = req.headers.authorization;
   jwt.verify(token, secret, (err, decoded) => {
     if (err) {
@@ -63,5 +63,3 @@ exports.sessionParamsValidations = [
     }),
   paramValidation
 ];
-
-exports.authValidations = [checkToken];

@@ -70,6 +70,9 @@ module.exports = (sequelize, DataTypes) => {
       ...paginate(data)
     })
       .then(users => users)
-      .catch(err => databaseError(err));
+      .catch(err => {
+        logger.error('Database error has occurred');
+        throw databaseError(err);
+      });
   return User;
 };
