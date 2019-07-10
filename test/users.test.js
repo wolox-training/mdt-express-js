@@ -197,7 +197,7 @@ describe('users api tests', () => {
           .then(response => expect(response.text).toEqual('[1]'))
       ));
 
-  test.only('createUserAdmin with jwt and all params and an inexistent user creates a new admin user', () =>
+  test('createUserAdmin with jwt and all params and an inexistent user creates a new admin user', () =>
     User.createWithHashedPassword(mockedUser)
       .then(() =>
         auth({
