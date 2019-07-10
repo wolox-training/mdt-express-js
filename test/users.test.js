@@ -196,4 +196,26 @@ describe('users api tests', () => {
           // Sequelize returns an array with the ids that were modified
           .then(response => expect(response.text).toEqual('[1]'))
       ));
+
+  test.only('createUserAdmin with jwt and all params and an inexistent user creates a new admin user', () =>
+    User.createWithHashedPassword(mockedUser)
+      .then(() =>
+        auth({
+          email: 'manuel.tuero@wolox.com.ar',
+          password: 'Wolox1189!'
+        })
+      )
+      .then(result =>
+        request(server)
+          .post('/admin/users')
+          .send({
+            firstName: 'foo',
+            lastName: 'bar',
+            email: 'unknownuser@wolox.com.ar',
+            password: 'Wolox1189!'
+          })
+          .set('Authorization', result.token)
+          .expect(201)
+          .then(response => expect(JSON.parse(response.text).admin).toEqual(true))
+      ));
 });
