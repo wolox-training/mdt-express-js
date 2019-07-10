@@ -16,8 +16,7 @@ exports.getUsers = (req, res, next) =>
     .then(users => res.status(200).send(users))
     .catch(next);
 
-exports.createUserAdmin = (req, res, next) => {
-  createUserAdmin(req.query)
+exports.createUserAdmin = (req, res, next) =>
+  createUserAdmin(req.body)
     .then(admin => res.status(201).send(admin))
     .catch(next);
-};

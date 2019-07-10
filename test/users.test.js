@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 const { User } = require('../app/models'),
   { auth } = require('../app/services/users'),
   server = require('../app'),
@@ -161,5 +162,38 @@ describe('users api tests', () => {
       .expect(403)
       .then(response =>
         expect(response.text).toEqual('{"message":"jwt must be provided","internal_code":"forbidden_error"}')
+      ));
+
+  test('createUserAdmin with jwt and missing params returns bad request error', () =>
+    User.createWithHashedPassword(mockedUser)
+      .then(() =>
+        auth({
+          email: 'manuel.tuero@wolox.com.ar',
+          password: 'Wolox1189!'
+        })
+      )
+      .then(result =>
+        request(server)
+          .post('/admin/users')
+          .set('Authorization', result.token)
+          .then(response => expect(response.body.internal_code).toEqual('bad_request_error'))
+      ));
+
+  test.only('createUserAdmin with jwt and all params and existent user modify the regular user permissions to admin', () =>
+    User.createWithHashedPassword(mockedUser)
+      .then(() =>
+        auth({
+          email: 'manuel.tuero@wolox.com.ar',
+          password: 'Wolox1189!'
+        })
+      )
+      .then(result =>
+        request(server)
+          .post('/admin/users')
+          .send(mockedUser)
+          .set('Authorization', result.token)
+          .expect(201)
+          // Sequelize returns an array with the ids that were modified
+          .then(response => expect(response.text).toEqual('[1]'))
       ));
 });
