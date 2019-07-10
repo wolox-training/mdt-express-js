@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt'),
   jwt = require('jsonwebtoken'),
   { User } = require('../models'),
   errors = require('../errors'),
+  logger = require('../logger'),
   config = require('../../config'),
   { secret } = config.common.session;
 
@@ -22,8 +23,10 @@ exports.auth = async data => {
         };
       }
     }
+    logger.error('Incorrect username or password');
     return errors.forbiddenError('Incorrect username or password');
   } catch (err) {
+    logger.error('Database error');
     throw errors.databaseError(err);
   }
 };
