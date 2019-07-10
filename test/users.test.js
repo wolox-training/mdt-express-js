@@ -111,6 +111,12 @@ describe('users api tests', () => {
       })
     ));
 
+  test('getAll without send page and pageSize params returns the first page users', () =>
+    User.createWithHashedPassword(mockedUser)
+      .then(user => user)
+      .then(() => User.getAll())
+      .then(users => expect(users.length).toEqual(1)));
+
   test('getAll with one user returns all users', () =>
     User.createWithHashedPassword(mockedUser)
       .then(user => user)
