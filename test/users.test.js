@@ -179,7 +179,7 @@ describe('users api tests', () => {
           .then(response => expect(response.body.internal_code).toEqual('bad_request_error'))
       ));
 
-  test.only('createUserAdmin with jwt and all params and existent user modify the regular user permissions to admin', () =>
+  test('createUserAdmin with jwt and all params and existent user modify the regular user permissions to admin', () =>
     User.createWithHashedPassword(mockedUser)
       .then(() =>
         auth({
