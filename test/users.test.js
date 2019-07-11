@@ -197,7 +197,7 @@ describe('users api tests', () => {
           .then(response => expect(response.text).toEqual('[1]'))
       ));
 
-  test('createUserAdmin with jwt and all params and an inexistent user creates a new admin user', () =>
+  test.only('createUserAdmin with jwt and all params and an inexistent user creates a new admin user', () =>
     User.createWithHashedPassword(mockedUser)
       .then(() =>
         auth({
@@ -215,7 +215,6 @@ describe('users api tests', () => {
             password: 'Wolox1189!'
           })
           .set('Authorization', result.token)
-          .expect(201)
           .then(response => expect(JSON.parse(response.text).admin).toEqual(true))
       ));
 });

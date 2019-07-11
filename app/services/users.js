@@ -26,23 +26,8 @@ exports.auth = async data => {
     logger.error('Incorrect username or password');
     return errors.forbiddenError('Incorrect username or password');
   } catch (err) {
+    console.log('aca rompe en el auth');
     logger.error('Database error');
     throw errors.databaseError(err);
-  }
-};
-
-exports.createUserAdmin = async data => {
-  try {
-    const user = await User.findOne({
-      where: {
-        email: data.email
-      }
-    });
-    if (!user) {
-      return await User.createWithHashedPassword({ admin: true, ...data });
-    }
-    return await User.update({ admin: true }, { where: { id: user.id } });
-  } catch (err) {
-    throw errors.databaseError(err.message);
   }
 };

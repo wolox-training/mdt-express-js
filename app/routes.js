@@ -11,5 +11,5 @@ exports.init = app => {
   app.post('/users', userParamsValidations, createUser);
   app.get('/users', checkToken, getUsers);
   app.post('/users/sessions', sessionParamsValidations, login);
-  app.post('/admin/users', [checkToken, ...userParamsValidations], createUserAdmin);
+  app.post('/admin/users', [checkToken, userParamsValidations], createUserAdmin);
 };

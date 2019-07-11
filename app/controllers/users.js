@@ -1,5 +1,5 @@
 const { User } = require('../models');
-const { auth, createUserAdmin } = require('../services/users.js');
+const { auth } = require('../services/users.js');
 
 exports.createUser = (req, res, next) =>
   User.createWithHashedPassword(req.query)
@@ -16,7 +16,20 @@ exports.getUsers = (req, res, next) =>
     .then(users => res.status(200).send(users))
     .catch(next);
 
-exports.createUserAdmin = (req, res, next) =>
-  createUserAdmin(req.body)
-    .then(admin => res.status(201).send(admin))
-    .catch(next);
+exports.createUserAdmin = async (req, res, next) => {
+  try {
+    const user = await User.findUser(req.body);
+    let response = null;
+    if (user) {
+      response = await User.update({ admin: true }, { where: { id: user.id } });
+    } else {
+      response = await User.createWithHashedPassword({
+        admin: true,
+        ...req.body
+      });
+    }
+    res.status(201).send(response);
+  } catch (err) {
+    next(err);
+  }
+};
