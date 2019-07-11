@@ -1,7 +1,8 @@
 const { check, validationResult } = require('express-validator'),
   jwt = require('jsonwebtoken'),
-  { invalidInputError, forbiddenError, unauthorizedError } = require('../errors'),
+  { invalidInputError, forbiddenError, unauthorizedError, notFoundError } = require('../errors'),
   { isValidEmail } = require('../helpers'),
+  { getAll } = require('../services/albums'),
   config = require('../../config'),
   { secret } = config.common.session;
 
@@ -68,6 +69,20 @@ exports.adminValidations = (req, res, next) => {
   if (req.decoded.admin) {
     next();
   } else {
-    throw unauthorizedError('You must be admin user for use this service');
+    next(unauthorizedError('You must be admin user for use this service'));
+  }
+};
+
+exports.albumIdValidations = async (req, res, next) => {
+  const album = await getAll(`albums/${req.params.id}`);
+  if (Object.keys(album).length > 0) {
+    req.purchase = {
+      userId: req.decoded.id,
+      albumId: album.id,
+      title: album.title
+    };
+    next();
+  } else {
+    next(notFoundError('Cannot get the album, please review the id'));
   }
 };

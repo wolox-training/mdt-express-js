@@ -1,4 +1,5 @@
-const { getAll, getAlbumPhotos } = require('../services/albums');
+const { getAll, getAlbumPhotos } = require('../services/albums'),
+  { Purchase } = require('../models');
 
 exports.getAlbums = async (req, res, next) => {
   try {
@@ -20,8 +21,8 @@ exports.getAlbumPhotos = async (req, res, next) => {
 
 exports.purchaseAlbum = async (req, res, next) => {
   try {
-    const album = await getAll(`albums/${req.params.id}`);
-    res.status(200).send(album);
+    const purchase = await Purchase.buyAlbum(req.purchase);
+    res.status(201).send(purchase);
   } catch (err) {
     next(err);
   }
