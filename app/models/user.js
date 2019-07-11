@@ -79,7 +79,7 @@ module.exports = (sequelize, DataTypes) => {
     User.findOne({
       where: { email: data.email }
     })
-      .then(user => user.dataValues)
+      .then(user => user)
       .catch(err => {
         logger.error('Database error has occurred');
         throw databaseError(err);

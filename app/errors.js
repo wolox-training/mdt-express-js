@@ -14,7 +14,7 @@ exports.albumsApiError = message => internalError(message, exports.ALBUMS_API_ER
 
 exports.DATABASE_ERROR = 'database_error';
 exports.databaseError = err =>
-  internalError(err.errors ? err.errors[0].message : 'Database error', exports.DATABASE_ERROR);
+  internalError(err.errors ? err.errors[0].message : err.message, exports.DATABASE_ERROR);
 
 exports.DEFAULT_ERROR = 'default_error';
 exports.defaultError = message => internalError(message, exports.DEFAULT_ERROR);

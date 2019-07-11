@@ -8,11 +8,7 @@ const bcrypt = require('bcrypt'),
 
 exports.auth = async data => {
   try {
-    const user = await User.findOne({
-      where: {
-        email: data.email
-      }
-    });
+    const user = await User.findUser(data);
     if (user) {
       const matches = await bcrypt.compare(data.password, user.password);
       if (matches) {
@@ -26,7 +22,6 @@ exports.auth = async data => {
     logger.error('Incorrect username or password');
     return errors.forbiddenError('Incorrect username or password');
   } catch (err) {
-    console.log('aca rompe en el auth');
     logger.error('Database error');
     throw errors.databaseError(err);
   }

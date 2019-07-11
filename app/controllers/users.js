@@ -16,7 +16,7 @@ exports.getUsers = (req, res, next) =>
     .then(users => res.status(200).send(users))
     .catch(next);
 
-exports.createUserAdmin = async (req, res, next) => {
+exports.createUserAdmin = async (req, res) => {
   try {
     const user = await User.findUser(req.body);
     let response = null;
@@ -30,6 +30,7 @@ exports.createUserAdmin = async (req, res, next) => {
     }
     res.status(201).send(response);
   } catch (err) {
-    next(err);
+    console.log('entro en hay usuario');
+    throw err;
   }
 };
