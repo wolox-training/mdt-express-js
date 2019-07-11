@@ -10,6 +10,14 @@ const mockedUser = {
   password: 'Wolox1189!'
 };
 
+const adminUser = {
+  firstName: 'admin',
+  lastName: 'pro',
+  email: 'admin@wolox.com',
+  password: 'Wolox1189!',
+  admin: true
+};
+
 describe('users api tests', () => {
   test('create user with valid input and the user does not exist creates correctly', () =>
     User.createWithHashedPassword(mockedUser).then(user =>
@@ -155,7 +163,7 @@ describe('users api tests', () => {
       .then(() =>
         request(server)
           .post('/users/sessions')
-          .send({
+          .query({
             email: 'manuel.tuero@wolox.com.ar',
             password: 'Wolox1189!'
           })
@@ -172,15 +180,18 @@ describe('users api tests', () => {
       .post('/admin/users')
       .expect(403)
       .then(response =>
-        expect(response.text).toEqual('{"message":"jwt must be provided","internal_code":"forbidden_error"}')
+        expect(JSON.parse(response.text)).toEqual({
+          message: 'jwt must be provided',
+          internal_code: 'forbidden_error'
+        })
       ));
 
-  test('createUserAdmin with jwt and missing params returns bad request error', () =>
+  test('createUserAdmin with jwt and regular user returns unauthorized error', () =>
     User.createWithHashedPassword(mockedUser)
       .then(() =>
         request(server)
           .post('/users/sessions')
-          .send({
+          .query({
             email: 'manuel.tuero@wolox.com.ar',
             password: 'Wolox1189!'
           })
@@ -189,43 +200,48 @@ describe('users api tests', () => {
         request(server)
           .post('/admin/users')
           .set('Authorization', res.body.token)
-          .then(response => expect(response.body.internal_code).toEqual('bad_request_error'))
+          .then(response =>
+            expect(response.body).toEqual({
+              internal_code: 'unauthorized_error',
+              message: 'You must be admin user for use this service'
+            })
+          )
       ));
 
-  test('createUserAdmin with jwt and all params and existent user modify the regular user permissions to admin', () =>
-    User.createWithHashedPassword(mockedUser)
+  test('createUserAdmin with jwt and all params and user admin and another existent user modify the regular user permissions to admin', () =>
+    User.createWithHashedPassword(adminUser)
+      .then(User.createWithHashedPassword(mockedUser))
       .then(() =>
         request(server)
           .post('/users/sessions')
-          .send({
-            email: 'manuel.tuero@wolox.com.ar',
+          .query({
+            email: 'admin@wolox.com',
             password: 'Wolox1189!'
           })
       )
       .then(res =>
         request(server)
           .post('/admin/users')
-          .send(mockedUser)
+          .query(mockedUser)
           .set('Authorization', res.body.token)
-          .expect(201)
           // Sequelize returns an array with the ids that were modified
           .then(response => expect(response.text).toEqual('[1]'))
       ));
 
-  test('createUserAdmin with jwt and all params and an inexistent user creates a new admin user', () =>
-    User.createWithHashedPassword(mockedUser)
+  test('createUserAdmin with jwt and all params and user admin and inexistent user creates a new admin user', () =>
+    User.createWithHashedPassword(adminUser)
       .then(() =>
         request(server)
           .post('/users/sessions')
-          .send({
-            email: 'manuel.tuero@wolox.com.ar',
+          .query({
+            email: 'admin@wolox.com',
             password: 'Wolox1189!'
           })
       )
       .then(res =>
         request(server)
           .post('/admin/users')
-          .send({
+          .query({
             firstName: 'foo',
             lastName: 'bar',
             email: 'unknownuser@wolox.com.ar',

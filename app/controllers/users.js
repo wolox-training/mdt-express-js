@@ -18,11 +18,11 @@ exports.getUsers = (req, res, next) =>
 
 exports.login = async (req, res, next) => {
   try {
-    const user = await User.findUser(req.body);
+    const user = await User.findUser(req.query);
     if (user) {
-      const matches = await bcrypt.compare(req.body.password, user.password);
+      const matches = await bcrypt.compare(req.query.password, user.password);
       if (matches) {
-        const token = jwt.sign({ email: user.email }, secret);
+        const token = jwt.sign({ email: user.email, admin: user.admin }, secret);
         res.status(201).send({
           message: 'Authentication successful!',
           token
@@ -39,14 +39,14 @@ exports.login = async (req, res, next) => {
 
 exports.createUserAdmin = async (req, res, next) => {
   try {
-    const user = await User.findUser(req.body);
+    const user = await User.findUser(req.query);
     let response = null;
     if (user) {
       response = await User.update({ admin: true }, { where: { id: user.id } });
     } else {
       response = await User.createWithHashedPassword({
         admin: true,
-        ...req.body
+        ...req.query
       });
     }
     res.status(201).send(response);
