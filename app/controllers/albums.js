@@ -17,3 +17,12 @@ exports.getAlbumPhotos = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.purchaseAlbum = async (req, res, next) => {
+  try {
+    const album = await getAll(`albums/${req.params.id}`);
+    res.status(200).send(album);
+  } catch (err) {
+    next(err);
+  }
+};
