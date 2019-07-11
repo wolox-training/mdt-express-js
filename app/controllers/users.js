@@ -1,14 +1,14 @@
-const { User } = require('../models');
-const { auth } = require('../services/users.js');
+const { User } = require('../models'),
+  bcrypt = require('bcrypt'),
+  jwt = require('jsonwebtoken'),
+  errors = require('../errors'),
+  logger = require('../logger'),
+  config = require('../../config'),
+  { secret } = config.common.session;
 
 exports.createUser = (req, res, next) =>
   User.createWithHashedPassword(req.query)
     .then(user => res.status(201).send(user))
-    .catch(next);
-
-exports.login = (req, res, next) =>
-  auth(req.query)
-    .then(result => res.status(201).send(result))
     .catch(next);
 
 exports.getUsers = (req, res, next) =>
@@ -16,7 +16,28 @@ exports.getUsers = (req, res, next) =>
     .then(users => res.status(200).send(users))
     .catch(next);
 
-exports.createUserAdmin = async (req, res) => {
+exports.login = async (req, res, next) => {
+  try {
+    const user = await User.findUser(req.body);
+    if (user) {
+      const matches = await bcrypt.compare(req.body.password, user.password);
+      if (matches) {
+        const token = jwt.sign({ email: user.email }, secret);
+        res.status(201).send({
+          message: 'Authentication successful!',
+          token
+        });
+        return;
+      }
+    }
+    logger.error('Incorrect username or password');
+    throw errors.forbiddenError('Incorrect username or password');
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.createUserAdmin = async (req, res, next) => {
   try {
     const user = await User.findUser(req.body);
     let response = null;
@@ -30,7 +51,6 @@ exports.createUserAdmin = async (req, res) => {
     }
     res.status(201).send(response);
   } catch (err) {
-    console.log('entro en hay usuario');
-    throw err;
+    next(err);
   }
 };
