@@ -48,7 +48,12 @@ module.exports = (sequelize, DataTypes) => {
       underscored: true,
       timestamps: false,
       freezeTableName: true,
-      tableName: 'users'
+      tableName: 'users',
+      classMethods: {
+        associate: models => {
+          User.hasMany(models.Album);
+        }
+      }
     }
   );
 
