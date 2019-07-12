@@ -9,11 +9,13 @@ module.exports = (sequelize, DataTypes) => {
       userId: {
         allowNull: false,
         field: 'user_id',
+        primaryKey: true,
         type: DataTypes.INTEGER
       },
       albumId: {
         allowNull: false,
         field: 'album_id',
+        primaryKey: true,
         type: DataTypes.INTEGER
       },
       title: {
@@ -46,11 +48,7 @@ module.exports = (sequelize, DataTypes) => {
       if (purchase) {
         throw new Error('You already buy this album');
       } else {
-        Purchase.create({
-          userId: data.userId,
-          albumId: data.albumId,
-          title: data.title
-        });
+        Purchase.create(data);
       }
     } catch (err) {
       logger.error('Database error has occurred');

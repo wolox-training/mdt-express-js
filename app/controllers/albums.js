@@ -19,11 +19,7 @@ exports.getAlbumPhotos = async (req, res, next) => {
   }
 };
 
-exports.purchaseAlbum = async (req, res, next) => {
-  try {
-    const purchase = await Purchase.buyAlbum(req.purchase);
-    res.status(201).send(purchase);
-  } catch (err) {
-    next(err);
-  }
-};
+exports.purchaseAlbum = (req, res, next) =>
+  Purchase.buyAlbum(req.purchase)
+    .then(result => res.status(201).send(result))
+    .catch(next);
