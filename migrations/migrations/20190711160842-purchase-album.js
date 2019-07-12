@@ -5,7 +5,6 @@ module.exports = {
     queryInterface.createTable('purchases', {
       userId: {
         field: 'user_id',
-        primaryKey: true,
         references: {
           model: 'users',
           key: 'id'
@@ -15,7 +14,7 @@ module.exports = {
       albumId: {
         allowNull: false,
         field: 'album_id',
-        primaryKey: true,
+        unique: true,
         type: Sequelize.INTEGER
       },
       title: {

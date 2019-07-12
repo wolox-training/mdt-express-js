@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
       tableName: 'purchases',
       classMethods: {
         associate: models =>
-          Purchase.belongsTo(models.user, {
+          Purchase.belongsTo(models.User, {
             as: 'userId',
             onDelete: 'CASCADE'
           })
@@ -41,21 +41,23 @@ module.exports = (sequelize, DataTypes) => {
 
   Purchase.buyAlbum = async data => {
     try {
-      console.log('******************* data: ', data);
+      let result = null;
       const purchase = await Purchase.findOne({
         where: { userId: data.userId, albumId: data.albumId }
       });
       if (purchase) {
-        throw new Error('You already buy this album');
-      } else {
-        Purchase.create(data);
+        result = 'You already buy this album';
       }
+      result = await Purchase.create(data);
+      logger.info(`The album "${purchase.title}" was purchased successfully`);
+      return result;
     } catch (err) {
-      logger.error('Database error has occurred');
+      logger.error('A database error has occurred during the purchase of the album');
       throw databaseError(err);
     }
   };
 
   sequelize.sync();
+
   return Purchase;
 };

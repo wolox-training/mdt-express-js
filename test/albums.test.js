@@ -10,9 +10,7 @@ const mockedUser = {
 };
 
 describe('albums api tests', () => {
-  beforeEach(() => {
-    User.createWithHashedPassword(mockedUser).catch(err => err);
-  });
+  beforeEach(() => User.createWithHashedPassword(mockedUser));
 
   test('purchaseAlbum without jwt returns forbidden error', () => {
     request(server)
@@ -43,5 +41,19 @@ describe('albums api tests', () => {
               message: 'Cannot get the album, please review the id'
             })
           )
+      ));
+
+  test.only('purchaseAlbum with jwt and existing album returns purchase successful', () =>
+    request(server)
+      .post('/users/sessions')
+      .query({
+        email: 'foo.bar@wolox.com.ar',
+        password: 'Wolox1189!'
+      })
+      .then(res =>
+        request(server)
+          .post('/albums/2')
+          .set('Authorization', res.body.token)
+          .then(response => expect(response).toEqual())
       ));
 });

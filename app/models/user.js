@@ -51,7 +51,7 @@ module.exports = (sequelize, DataTypes) => {
       tableName: 'users',
       classMethods: {
         associate: models => {
-          User.hasMany(models.Album);
+          User.hasMany(models.Purchase);
         }
       }
     }
@@ -89,6 +89,8 @@ module.exports = (sequelize, DataTypes) => {
         logger.error('Database error has occurred');
         throw databaseError(err);
       });
+
+  sequelize.sync();
 
   return User;
 };
