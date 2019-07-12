@@ -42,18 +42,4 @@ describe('albums api tests', () => {
             })
           )
       ));
-
-  test.only('purchaseAlbum with jwt and existing album returns purchase successful', () =>
-    request(server)
-      .post('/users/sessions')
-      .query({
-        email: 'foo.bar@wolox.com.ar',
-        password: 'Wolox1189!'
-      })
-      .then(res =>
-        request(server)
-          .post('/albums/2')
-          .set('Authorization', res.body.token)
-          .then(response => expect(response).toEqual())
-      ));
 });

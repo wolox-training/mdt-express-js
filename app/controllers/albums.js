@@ -1,5 +1,5 @@
 const { getAll, getAlbumPhotos } = require('../services/albums'),
-  { Purchase } = require('../models');
+  { Album } = require('../models');
 
 exports.getAlbums = async (req, res, next) => {
   try {
@@ -20,6 +20,6 @@ exports.getAlbumPhotos = async (req, res, next) => {
 };
 
 exports.purchaseAlbum = (req, res, next) =>
-  Purchase.buyAlbum(req.purchase)
+  Album.buyAlbum(req.purchase)
     .then(result => res.status(201).send(result))
     .catch(next);

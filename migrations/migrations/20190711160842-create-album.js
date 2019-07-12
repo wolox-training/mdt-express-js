@@ -2,25 +2,26 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) =>
-    queryInterface.createTable('purchases', {
+    queryInterface.createTable('albums', {
       userId: {
         field: 'user_id',
+        primaryKey: true,
+        type: Sequelize.INTEGER,
         references: {
           model: 'users',
           key: 'id'
-        },
-        type: Sequelize.INTEGER
+        }
       },
       albumId: {
-        allowNull: false,
         field: 'album_id',
-        unique: true,
+        primaryKey: true,
         type: Sequelize.INTEGER
       },
       title: {
+        allowNull: false,
         type: Sequelize.STRING,
-        allowNull: false
+        unique: true
       }
     }),
-  down: queryInterface => queryInterface.dropTable('purchases')
+  down: queryInterface => queryInterface.dropTable('albums')
 };

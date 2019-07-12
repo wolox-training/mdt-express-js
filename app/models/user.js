@@ -48,14 +48,13 @@ module.exports = (sequelize, DataTypes) => {
       underscored: true,
       timestamps: false,
       freezeTableName: true,
-      tableName: 'users',
-      classMethods: {
-        associate: models => {
-          User.hasMany(models.Purchase);
-        }
-      }
+      tableName: 'users'
     }
   );
+
+  User.associate = models => {
+    User.hasMany(models.Album);
+  };
 
   User.createWithHashedPassword = user => {
     const hashedPassword = bcrypt.hashSync(user.password, Number(saltRounds));
@@ -89,8 +88,6 @@ module.exports = (sequelize, DataTypes) => {
         logger.error('Database error has occurred');
         throw databaseError(err);
       });
-
-  sequelize.sync();
 
   return User;
 };
