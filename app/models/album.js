@@ -1,6 +1,6 @@
 'use strict';
 const logger = require('../logger'),
-  { databaseError, conflictError } = require('../errors');
+  { databaseError, conflictError, unauthorizedError } = require('../errors');
 
 module.exports = (sequelize, DataTypes) => {
   const Album = sequelize.define(
@@ -40,13 +40,33 @@ module.exports = (sequelize, DataTypes) => {
 
   Album.buyAlbum = async data => {
     try {
-      const existentAlbum = await Album.findOne({ where: { userId: data.userId, albumId: data.albumId } });
+      const existentAlbum = await Album.findOne({
+        where: { userId: data.userId, albumId: data.albumId }
+      });
       if (existentAlbum) {
         return conflictError(`You already have the album "${existentAlbum.title}"`);
       }
       return await Album.create(data);
     } catch (err) {
       logger.error('A database error has occurred during the purchase of the album');
+      throw databaseError(err);
+    }
+  };
+
+  Album.findAlbumsByUser = async req => {
+    try {
+      if (!req.decoded.admin && Number(req.params.id) !== req.decoded.id) {
+        return unauthorizedError('You must have admin permissions to get the albums of another user');
+      }
+      const albums = await Album.findAll({
+        where: {
+          userId: req.params.id
+        }
+      });
+      console.log('********************************************* albums: ', albums);
+      return albums;
+    } catch (err) {
+      logger.error('A database error has occurred during the search of albums');
       throw databaseError(err);
     }
   };

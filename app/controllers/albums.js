@@ -23,3 +23,8 @@ exports.purchaseAlbum = (req, res, next) =>
   Album.buyAlbum(req.purchase)
     .then(result => res.status(201).send(result))
     .catch(next);
+
+exports.getAlbumsByUser = (req, res, next) =>
+  Album.findAlbumsByUser(req)
+    .then(albums => res.status(200).send(albums))
+    .catch(next);
