@@ -42,4 +42,48 @@ describe('albums api tests', () => {
             })
           )
       ));
+
+  test('purchaseAlbum with jwt and album existent returns the purchased album', () =>
+    request(server)
+      .post('/users/sessions')
+      .query({
+        email: 'foo.bar@wolox.com.ar',
+        password: 'Wolox1189!'
+      })
+      .then(res =>
+        request(server)
+          .post('/albums/1')
+          .set('Authorization', res.body.token)
+          .then(response =>
+            expect(response.body).toEqual({
+              albumId: 1,
+              title: 'quidem molestiae enim',
+              userId: 1
+            })
+          )
+      ));
+
+  test('purchaseAlbum with jwt and album already purchased by user returns conflict error', () =>
+    request(server)
+      .post('/users/sessions')
+      .query({
+        email: 'foo.bar@wolox.com.ar',
+        password: 'Wolox1189!'
+      })
+      .then(res =>
+        request(server)
+          .post('/albums/1')
+          .set('Authorization', res.body.token)
+          .then(() =>
+            request(server)
+              .post('/albums/1')
+              .set('Authorization', res.body.token)
+              .then(response =>
+                expect(response.body).toEqual({
+                  internalCode: 'conflict_error',
+                  message: 'You already have the album "quidem molestiae enim"'
+                })
+              )
+          )
+      ));
 });
