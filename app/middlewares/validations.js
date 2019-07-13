@@ -1,6 +1,6 @@
 const { check, validationResult } = require('express-validator'),
   jwt = require('jsonwebtoken'),
-  { invalidInputError, forbiddenError } = require('../errors'),
+  { invalidInputError, forbiddenError, unauthorizedError } = require('../errors'),
   { isValidEmail } = require('../helpers'),
   config = require('../../config'),
   { secret } = config.common.session;
@@ -63,3 +63,11 @@ exports.sessionParamsValidations = [
     }),
   paramValidation
 ];
+
+exports.adminValidations = (req, res, next) => {
+  if (req.decoded.admin) {
+    next();
+  } else {
+    throw unauthorizedError('You must be admin user for use this service');
+  }
+};

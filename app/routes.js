@@ -1,7 +1,12 @@
 const { healthCheck } = require('./controllers/healthCheck'),
   { getAlbums, getAlbumPhotos } = require('./controllers/albums'),
-  { createUser, login, getUsers } = require('./controllers/users'),
-  { userParamsValidations, sessionParamsValidations, checkToken } = require('./middlewares/validations');
+  { createUser, login, getUsers, createUserAdmin } = require('./controllers/users'),
+  {
+    userParamsValidations,
+    sessionParamsValidations,
+    checkToken,
+    adminValidations
+  } = require('./middlewares/validations');
 
 exports.init = app => {
   app.get('/health', healthCheck);
@@ -11,4 +16,5 @@ exports.init = app => {
   app.post('/users', userParamsValidations, createUser);
   app.get('/users', checkToken, getUsers);
   app.post('/users/sessions', sessionParamsValidations, login);
+  app.post('/admin/users', [checkToken, adminValidations, userParamsValidations], createUserAdmin);
 };

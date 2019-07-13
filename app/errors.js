@@ -3,6 +3,9 @@ const internalError = (message, internalCode) => ({
   internalCode
 });
 
+exports.UNAUTHORIZED_ERROR = 'unauthorized_error';
+exports.unauthorizedError = message => internalError(message, exports.UNAUTHORIZED_ERROR);
+
 exports.FORBIDDEN_ERROR = 'forbidden_error';
 exports.forbiddenError = message => internalError(message, exports.FORBIDDEN_ERROR);
 
@@ -14,7 +17,7 @@ exports.albumsApiError = message => internalError(message, exports.ALBUMS_API_ER
 
 exports.DATABASE_ERROR = 'database_error';
 exports.databaseError = err =>
-  internalError(err.errors ? err.errors[0].message : 'Database Error', exports.DATABASE_ERROR);
+  internalError(err.errors ? err.errors[0].message : err.message, exports.DATABASE_ERROR);
 
 exports.DEFAULT_ERROR = 'default_error';
 exports.defaultError = message => internalError(message, exports.DEFAULT_ERROR);

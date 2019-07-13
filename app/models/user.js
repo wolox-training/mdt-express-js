@@ -37,6 +37,11 @@ module.exports = (sequelize, DataTypes) => {
             msg: 'Minimum 8 characters are required in the password'
           }
         }
+      },
+      admin: {
+        allowNull: false,
+        defaultValue: false,
+        type: DataTypes.BOOLEAN
       }
     },
     {
@@ -69,5 +74,16 @@ module.exports = (sequelize, DataTypes) => {
         logger.error('Database error has occurred');
         throw databaseError(err);
       });
+
+  User.findUser = data =>
+    User.findOne({
+      where: { email: data.email }
+    })
+      .then(user => user)
+      .catch(err => {
+        logger.error('Database error has occurred');
+        throw databaseError(err);
+      });
+
   return User;
 };
