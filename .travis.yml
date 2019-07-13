@@ -6,14 +6,14 @@ node_js:
 sudo: true
 
 env:
-  - CXX=g++-4.8 NODE_ENV=testing DB_USERNAME=wtraining DB_NAME_TEST=db_wtraining_test                  
+  - CXX=g++-4.8 NODE_ENV=testing DB_USERNAME=wtraining DB_NAME_TEST=db_wtraining_test BASE_URL=https://jsonplaceholder.typicode.com/ PASSWORD_SALT_ROUNDS=10 NODE_API_SESSION_SECRET=some-super-secret
 
 addons:
   apt:
     sources:
-    - ubuntu-toolchain-r-test
+      - ubuntu-toolchain-r-test
     packages:
-    - g++-4.8
+      - g++-4.8
 
 services:
   - postgresql
@@ -25,7 +25,7 @@ before_script:
   - psql -c "CREATE DATABASE $DB_NAME_TEST;" -U postgres
   - psql -c "CREATE USER $DB_USERNAME WITH PASSWORD '$DB_USERNAME';" -U postgres
 
-script: 
+script:
   - npm run lint
   - npm run migrations-test
   - npm run test
