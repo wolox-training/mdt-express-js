@@ -40,10 +40,10 @@ module.exports = (sequelize, DataTypes) => {
         where: { userId: data.userId, albumId: data.albumId }
       });
       if (existentAlbum) {
+        logger.error(`You already have the album "${existentAlbum.title}`);
         return conflictError(`You already have the album "${existentAlbum.title}"`);
       }
-      const album = await Album.create(data);
-      return album;
+      return await Album.create(data);
     } catch (err) {
       logger.error('A database error has occurred during the purchase of the album');
       throw databaseError(err);
@@ -53,8 +53,10 @@ module.exports = (sequelize, DataTypes) => {
   Album.findAlbumsByUser = async req => {
     try {
       if (!req.decoded.admin && Number(req.params.id) !== req.decoded.id) {
+        logger.error('You must have admin permissions to get the albums of another user');
         return unauthorizedError('You must have admin permissions to get the albums of another user');
       }
+      logger.info(`Searching the albums of user ${req.params.id}...`);
       const albums = await Album.findAll({
         where: {
           userId: req.params.id
