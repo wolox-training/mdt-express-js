@@ -132,7 +132,9 @@ describe('albums api tests', () => {
             request(server)
               .get('/users/1/albums')
               .set('Authorization', res.body.token)
-              .then(response => expect(response.body).toEqual())
+              .then(response =>
+                expect(response.body).toEqual([{ albumId: 1, title: 'quidem molestiae enim', userId: 1 }])
+              )
           )
       ));
 

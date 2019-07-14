@@ -9,11 +9,7 @@ module.exports = (sequelize, DataTypes) => {
       userId: {
         field: 'user_id',
         primaryKey: true,
-        type: DataTypes.INTEGER,
-        references: {
-          model: 'users',
-          key: 'id'
-        }
+        type: DataTypes.INTEGER
       },
       albumId: {
         field: 'album_id',
@@ -46,7 +42,8 @@ module.exports = (sequelize, DataTypes) => {
       if (existentAlbum) {
         return conflictError(`You already have the album "${existentAlbum.title}"`);
       }
-      return await Album.create(data);
+      const album = await Album.create(data);
+      return album;
     } catch (err) {
       logger.error('A database error has occurred during the purchase of the album');
       throw databaseError(err);
@@ -63,7 +60,6 @@ module.exports = (sequelize, DataTypes) => {
           userId: req.params.id
         }
       });
-      console.log('********************************************* albums: ', albums);
       return albums;
     } catch (err) {
       logger.error('A database error has occurred during the search of albums');

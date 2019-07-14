@@ -53,7 +53,7 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   User.associate = models => {
-    User.hasMany(models.Album);
+    User.hasMany(models.Album, { foreignKey: 'userId' });
   };
 
   User.createWithHashedPassword = user => {
