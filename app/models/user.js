@@ -69,9 +69,9 @@ module.exports = (sequelize, DataTypes) => {
       });
   };
 
-  User.getAll = data =>
+  User.getAll = (page, pageSize) =>
     User.findAll({
-      ...paginate(data)
+      ...paginate(page, pageSize)
     })
       .then(users => users)
       .catch(err => {
