@@ -63,6 +63,7 @@
     "express-wolox-logger": "0.0.2",
     "jsonwebtoken": "^8.5.1",
     "jwt-simple": "^0.5.1",
+    "nock": "^10.0.6",
     "node-fetch": "^2.6.0",
     "pg": "^7.4.1",
     "sequelize": "^4.34.0",
