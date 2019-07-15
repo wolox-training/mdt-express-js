@@ -1,6 +1,7 @@
 const server = require('../app'),
   { User } = require('../app/models'),
   request = require('supertest'),
+  dictum = require('dictum.js'),
   nock = require('nock');
 
 const mockedUser = {
@@ -80,6 +81,7 @@ describe('albums api tests', () => {
               userId: 1
             });
             done();
+            dictum.chai(res, 'This endpoint gets the albums of provider or buys an album by id');
           })
       );
   });

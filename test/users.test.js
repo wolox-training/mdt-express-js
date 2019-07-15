@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 const { User } = require('../app/models'),
   server = require('../app'),
+  dictum = require('dictum.js'),
   request = require('supertest');
 
 const mockedUser = {
@@ -172,7 +173,10 @@ describe('users api tests', () => {
         request(server)
           .get('/users')
           .set('Authorization', res.body.token)
-          .then(response => expect(response.body.length).toEqual(1))
+          .then(response => {
+            expect(response.body.length).toEqual(1);
+            dictum.chai(response, 'This endpoint gets the users list or creates a new regular user');
+          })
       ));
 
   test('createUserAdmin without jwt returns an forbidden error', () =>
