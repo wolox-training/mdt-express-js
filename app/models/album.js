@@ -57,12 +57,11 @@ module.exports = (sequelize, DataTypes) => {
         return unauthorizedError('You must have admin permissions to get the albums of another user');
       }
       logger.info(`Searching the albums of user ${req.params.id}...`);
-      const albums = await Album.findAll({
+      return await Album.findAll({
         where: {
           userId: req.params.id
         }
       });
-      return albums;
     } catch (err) {
       logger.error('A database error has occurred during the search of albums');
       throw databaseError(err);

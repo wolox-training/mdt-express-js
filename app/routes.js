@@ -6,7 +6,8 @@ const { healthCheck } = require('./controllers/healthCheck'),
     sessionParamsValidations,
     checkToken,
     adminValidations,
-    albumIdValidations
+    albumIdValidations,
+    userExists
   } = require('./middlewares/validations');
 
 exports.init = app => {
@@ -17,7 +18,7 @@ exports.init = app => {
   app.get('/albums/:id/photos', getAlbumPhotos);
   app.post('/users', userParamsValidations, createUser);
   app.get('/users', checkToken, getUsers);
-  app.get('/users/:id/albums', checkToken, getAlbumsByUser);
+  app.get('/users/:id/albums', [checkToken, userExists], getAlbumsByUser);
   app.post('/users/sessions', sessionParamsValidations, login);
   app.post('/admin/users', [checkToken, adminValidations, userParamsValidations], createUserAdmin);
 };

@@ -1,5 +1,5 @@
 const server = require('../app'),
-  { User } = require('../app/models'),
+  { User, Album } = require('../app/models'),
   request = require('supertest');
 
 const mockedUser = {
@@ -7,6 +7,14 @@ const mockedUser = {
   lastName: 'bar',
   email: 'foo.bar@wolox.com.ar',
   password: 'Wolox1189!'
+};
+
+const adminUser = {
+  firstName: 'admin',
+  lastName: 'pro',
+  email: 'admin@wolox.com',
+  password: 'Wolox1189!',
+  admin: true
 };
 
 describe('albums api tests', () => {
@@ -99,23 +107,25 @@ describe('albums api tests', () => {
       ));
 
   test('getAlbumsByUser with jwt and regular user and id of another user returns unauthorized error', () =>
-    request(server)
-      .post('/users/sessions')
-      .query({
-        email: 'foo.bar@wolox.com.ar',
-        password: 'Wolox1189!'
-      })
-      .then(res =>
-        request(server)
-          .get('/users/10/albums')
-          .set('Authorization', res.body.token)
-          .then(response =>
-            expect(response.body).toEqual({
-              internalCode: 'unauthorized_error',
-              message: 'You must have admin permissions to get the albums of another user'
-            })
-          )
-      ));
+    User.createWithHashedPassword(adminUser).then(() =>
+      request(server)
+        .post('/users/sessions')
+        .query({
+          email: 'foo.bar@wolox.com.ar',
+          password: 'Wolox1189!'
+        })
+        .then(res =>
+          request(server)
+            .get('/users/2/albums')
+            .set('Authorization', res.body.token)
+            .then(response =>
+              expect(response.body).toEqual({
+                internalCode: 'unauthorized_error',
+                message: 'You must have admin permissions to get the albums of another user'
+              })
+            )
+        )
+    ));
 
   test('getAlbumsByUser with jwt and regular user and own id returns his albums', () =>
     request(server)
@@ -138,22 +148,44 @@ describe('albums api tests', () => {
           )
       ));
 
-  /* test.only('getAlbumsByUser with jwt and user inexistent returns not found error', () =>
-    request(server)
-      .post('/users/sessions')
-      .query({
-        email: 'foo.bar@wolox.com.ar',
-        password: 'Wolox1189!'
-      })
-      .then(res =>
+  test('getAlbumsByUser with jwt and admin user with id of other user get all albums of this user', () =>
+    User.createWithHashedPassword(adminUser).then(() =>
+      Album.create({ userId: 1, albumId: 1, title: 'test album' }).then(() =>
         request(server)
-          .post('/users/0/albums')
-          .set('Authorization', res.body.token)
-          .then(response =>
-            expect(response.body).toEqual({
-              internal_code: 'not_found_error',
-              message: 'Cannot get the user, please review the id'
-            })
+          .post('/users/sessions')
+          .query({
+            email: 'admin@wolox.com',
+            password: 'Wolox1189!'
+          })
+          .then(res =>
+            request(server)
+              .get('/users/1/albums')
+              .set('Authorization', res.body.token)
+              .then(response =>
+                expect(response.body).toEqual([{ userId: 1, albumId: 1, title: 'test album' }])
+              )
           )
-      )); */
+      )
+    ));
+
+  test('getAlbumsByUser with jwt and admin user with id of inexistent user returns not found error', () =>
+    User.createWithHashedPassword(adminUser).then(() =>
+      request(server)
+        .post('/users/sessions')
+        .query({
+          email: 'admin@wolox.com',
+          password: 'Wolox1189!'
+        })
+        .then(res =>
+          request(server)
+            .get('/users/0/albums')
+            .set('Authorization', res.body.token)
+            .then(response =>
+              expect(response.body).toEqual({
+                internal_code: 'not_found_error',
+                message: "The id 0 user's albums could not be obtained"
+              })
+            )
+        )
+    ));
 });
