@@ -28,3 +28,12 @@ exports.getAlbumsByUser = (req, res, next) =>
   Album.findAlbumsByUser(req)
     .then(albums => res.status(200).send(albums))
     .catch(next);
+
+exports.getPurchasedAlbumPhotos = async (req, res, next) => {
+  try {
+    const albums = await getAll(req.url);
+    res.status(200).send(albums);
+  } catch (err) {
+    next(err);
+  }
+};
