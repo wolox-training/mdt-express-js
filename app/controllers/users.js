@@ -12,7 +12,7 @@ exports.createUser = (req, res, next) =>
     .catch(next);
 
 exports.getUsers = (req, res, next) =>
-  User.getAll(req.query)
+  User.getAll(req.query.page, req.query.pageSize)
     .then(users => res.status(200).send(users))
     .catch(next);
 

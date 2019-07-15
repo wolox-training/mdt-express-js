@@ -132,7 +132,7 @@ describe('users api tests', () => {
   test('getAll with one user returns all users', () =>
     User.createWithHashedPassword(mockedUser)
       .then(user => user)
-      .then(() => User.getAll({ page: 0, pageSize: 1 }))
+      .then(() => User.getAll(0, 1))
       .then(users => expect(users.length).toEqual(1)));
 
   test('checkToken with invalid jwt returns invalid token error', () =>
@@ -224,7 +224,6 @@ describe('users api tests', () => {
           .post('/admin/users')
           .query(mockedUser)
           .set('Authorization', res.body.token)
-          // Sequelize returns an array with the ids that were modified
           .then(response => expect(response.text).toEqual('[1]'))
       ));
 
