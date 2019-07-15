@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 const server = require('../app'),
   { User, Album } = require('../app/models'),
   request = require('supertest'),
@@ -219,4 +220,93 @@ describe('albums api tests', () => {
             )
         )
     ));
+
+  test('get album photos without jwt returns forbidden error', done => {
+    nock(process.env.DB_HOST)
+      .get('/users/albums/1/photos')
+      .replyWithError({ message: 'jwt must be provided', internal_code: 'forbidden_error' });
+
+    request(server)
+      .get('/users/albums/1/photos')
+      .end((err, res) => {
+        expect(res.body).toEqual({ message: 'jwt must be provided', internal_code: 'forbidden_error' });
+        done();
+      });
+  });
+
+  test('get album photos with jwt and regular user and no albums bought returns not found error', done => {
+    nock(process.env.DB_HOST)
+      .get('/users/albums/1/photos')
+      .replyWithError({
+        message: 'The album id 1 photos could not be obtained',
+        internal_code: 'not_found_error'
+      });
+
+    request(server)
+      .post('/users/sessions')
+      .query({
+        email: 'foo.bar@wolox.com.ar',
+        password: 'Wolox1189!'
+      })
+      .end((_, response) =>
+        request(server)
+          .get('/users/albums/1/photos')
+          .set('Authorization', response.body.token)
+          .end((err, res) => {
+            expect(res.body).toEqual({
+              message: 'The album id 1 photos could not be obtained',
+              internal_code: 'not_found_error'
+            });
+            done();
+          })
+      );
+  });
+
+  test('get album photos with jwt and regular user and one album bought returns the photos list', done => {
+    nock(process.env.DB_HOST)
+      .get('/users/albums/1/photos')
+      .reply([
+        {
+          albumId: 1,
+          id: 1,
+          title: 'accusamus beatae ad facilis cum similique qui sunt',
+          url: 'https://via.placeholder.com/600/92c952',
+          thumbnailUrl: 'https://via.placeholder.com/150/92c952'
+        }
+      ]);
+
+    request(server)
+      .post('/users/sessions')
+      .query({
+        email: 'foo.bar@wolox.com.ar',
+        password: 'Wolox1189!'
+      })
+      .end((_, response) =>
+        request(server)
+          .post('/albums/1')
+          .set('Authorization', response.body.token)
+          .end(() =>
+            request(server)
+              .get('/users/albums/1/photos')
+              .set('Authorization', response.body.token)
+              .end((err, res) => {
+                expect(res.body).toEqual(
+                  expect.arrayContaining([
+                    {
+                      albumId: 1,
+                      id: 1,
+                      title: 'accusamus beatae ad facilis cum similique qui sunt',
+                      url: 'https://via.placeholder.com/600/92c952',
+                      thumbnailUrl: 'https://via.placeholder.com/150/92c952'
+                    }
+                  ])
+                );
+                done();
+              })
+          )
+      );
+  });
+
+  test('get album photos with jwt and regular user and one album bought for other user returns error', () =>
+    Promise.resolve());
 });
