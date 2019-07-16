@@ -11,6 +11,13 @@ const mockedUser = {
   password: 'Wolox1189!'
 };
 
+const otherUser = {
+  firstName: 'other',
+  lastName: 'user',
+  email: 'other.user@wolox.com.ar',
+  password: 'Wolox1189!'
+};
+
 const adminUser = {
   firstName: 'admin',
   lastName: 'pro',
@@ -321,19 +328,13 @@ describe('albums api tests', () => {
 
   test('get album photos with jwt and regular user and one album bought for other user returns error', async () => {
     nock(process.env.DB_HOST)
-      .get('/users/albums/1/photos')
+      .get('/users/albums/2/photos')
       .replyWithError({
-        message: 'The album id 1 photos could not be obtained',
+        message: 'The album id 2 photos could not be obtained',
         internal_code: 'not_found_error'
       });
 
-    const user = await User.create({
-      firstName: 'other',
-      lastName: 'user',
-      email: 'other.user@wolox.com.ar',
-      password: 'Wolox1189!'
-    });
-
+    const user = await User.create(otherUser);
     await Album.create({
       userId: user.id,
       albumId: 2,
@@ -357,5 +358,48 @@ describe('albums api tests', () => {
       message: 'The album id 2 photos could not be obtained',
       internal_code: 'not_found_error'
     });
+  });
+
+  test('get album photos with jwt and admin user and one album bought for other user returns photos', async () => {
+    nock(process.env.DB_HOST)
+      .get('/users/albums/2/photos')
+      .reply(200, [
+        {
+          albumId: 2,
+          id: 51,
+          thumbnailUrl: 'https://via.placeholder.com/150/8e973b',
+          title: 'non sunt voluptatem placeat consequuntur rem incidunt',
+          url: 'https://via.placeholder.com/600/8e973b'
+        }
+      ]);
+
+    await User.createWithHashedPassword(adminUser);
+    await Album.create({
+      userId: 1,
+      albumId: 2,
+      title: 'album bought by user 1'
+    });
+
+    const {
+      body: { token }
+    } = await request(server)
+      .post('/users/sessions')
+      .query({ email: 'admin@wolox.com', password: 'Wolox1189!' });
+
+    const response = await request(server)
+      .get('/users/albums/2/photos')
+      .set('Authorization', token);
+    expect(200);
+    expect(JSON.parse(response.text)).toEqual(
+      expect.arrayContaining([
+        {
+          albumId: 2,
+          id: 51,
+          thumbnailUrl: 'https://via.placeholder.com/150/8e973b',
+          title: 'non sunt voluptatem placeat consequuntur rem incidunt',
+          url: 'https://via.placeholder.com/600/8e973b'
+        }
+      ])
+    );
   });
 });
