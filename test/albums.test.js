@@ -49,39 +49,38 @@ describe('albums api tests', () => {
         })
     );
   });
-  /*
-  test('purchaseAlbum with jwt and album existent returns the purchased album', done => {
-    nock(process.env.DB_HOST)
-      .post('/albums/1')
-      .reply({
-        albumId: 1,
-        title: 'quidem molestiae enim',
-        userId: 1
+
+  test('purchaseAlbum with jwt and album purchased by user 1 returns the purchased album', done => {
+    nock(url)
+      .get('/albums/1')
+      .reply(200, {
+        userId: 1,
+        id: 1,
+        title: 'quidem molestiae enim'
       });
 
-    request(server)
-      .post('/users/sessions')
-      .query({
-        email: 'foo.bar@wolox.com.ar',
-        password: 'Wolox1189!'
-      })
-      .end((error, response) =>
-        request(server)
-          .post('/albums/1')
-          .set('Authorization', response.body.token)
-          .end((err, res) => {
-            expect(res.body).toEqual({
-              albumId: 1,
-              title: 'quidem molestiae enim',
-              userId: 1
-            });
-            done();
-            dictum.chai(res, 'This endpoint gets the albums of provider or buys an album by id');
-          })
-      );
+    User.createWithHashedPassword(mockedUser).then(user =>
+      request(server)
+        .post('/users/sessions')
+        .query({
+          email: user.email,
+          password: 'Wolox1189!'
+        })
+        .then(response =>
+          request(server)
+            .post('/albums/1')
+            .set('Authorization', response.body.token)
+        )
+        .then(res => {
+          expect(res.body.userId).to.equal(1);
+          expect(res.body.albumId).to.equal(1);
+          expect(res.body.title).to.equal('quidem molestiae enim');
+          done();
+        })
+    );
   });
 
-  test('purchaseAlbum with jwt and album already purchased by user returns conflict error', done => {
+  /* test('purchaseAlbum with jwt and album already purchased by user returns conflict error', done => {
     nock(process.env.DB_HOST)
       .post('/albums/1')
       .reply({
