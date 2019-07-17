@@ -250,12 +250,12 @@ describe('users api tests', () => {
           .then(response => expect(JSON.parse(response.text).admin).toEqual(true))
       ));
 
-  /* test.only('invalidate Sessions with jwt invalidates all sessions active', () =>
-    User.createWithHashedPassword(mockedUser).then(() =>
+  test('invalidate Sessions with jwt invalidates all sessions active', done =>
+    User.createWithHashedPassword(mockedUser).then(user =>
       request(server)
         .post('/users/sessions')
         .query({
-          email: 'manuel.tuero@wolox.com.ar',
+          email: user.email,
           password: 'Wolox1189!'
         })
         .then(res =>
@@ -266,8 +266,14 @@ describe('users api tests', () => {
               request(server)
                 .get('/users')
                 .set('Authorization', res.body.token)
-                .then(response => console.log('******************************* response: ', response))
+                .then(response => {
+                  expect(response.body).toEqual({
+                    message: 'Invalid token',
+                    internal_code: 'unauthorized_error'
+                  });
+                  done();
+                })
             )
         )
-    )); */
+    ));
 });
