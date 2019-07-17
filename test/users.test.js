@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 const { User } = require('../app/models'),
   server = require('../app'),
+  dictum = require('dictum.js'),
   request = require('supertest');
 
 const mockedUser = {
@@ -132,7 +133,7 @@ describe('users api tests', () => {
   test('getAll with one user returns all users', () =>
     User.createWithHashedPassword(mockedUser)
       .then(user => user)
-      .then(() => User.getAll({ page: 0, pageSize: 1 }))
+      .then(() => User.getAll(0, 1))
       .then(users => expect(users.length).toEqual(1)));
 
   test('checkToken with invalid jwt returns invalid token error', () =>
@@ -172,7 +173,10 @@ describe('users api tests', () => {
         request(server)
           .get('/users')
           .set('Authorization', res.body.token)
-          .then(response => expect(response.body.length).toEqual(1))
+          .then(response => {
+            expect(response.body.length).toEqual(1);
+            dictum.chai(response, 'This endpoint gets the users list or creates a new regular user');
+          })
       ));
 
   test('createUserAdmin without jwt returns an forbidden error', () =>
@@ -224,7 +228,6 @@ describe('users api tests', () => {
           .post('/admin/users')
           .query(mockedUser)
           .set('Authorization', res.body.token)
-          // Sequelize returns an array with the ids that were modified
           .then(response => expect(response.text).toEqual('[1]'))
       ));
 

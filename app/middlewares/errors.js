@@ -7,7 +7,8 @@ const statusCodes = {
   [errors.BAD_REQUEST_ERROR]: 400,
   [errors.UNAUTHORIZED_ERROR]: 401,
   [errors.FORBIDDEN_ERROR]: 403,
-  [errors.ALBUMS_API_ERROR]: 404,
+  [errors.NOT_FOUND_ERROR]: 404,
+  [errors.CONFLICT_ERROR]: 409,
   [errors.DATABASE_ERROR]: 503,
   [errors.DEFAULT_ERROR]: 500
 };

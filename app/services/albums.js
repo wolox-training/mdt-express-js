@@ -9,7 +9,7 @@ exports.getAll = source =>
     .then(res => res.json())
     .catch(err => {
       logger.error(err);
-      throw errors.albumsApiError(err);
+      throw errors.notFoundError(err);
     });
 
 exports.getAlbumPhotos = id =>
@@ -17,5 +17,5 @@ exports.getAlbumPhotos = id =>
     .then(res => res.json())
     .catch(err => {
       logger.error(err);
-      throw errors.albumsApiError(err);
+      throw errors.notFoundError(err);
     });

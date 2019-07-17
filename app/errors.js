@@ -3,6 +3,9 @@ const internalError = (message, internalCode) => ({
   internalCode
 });
 
+exports.CONFLICT_ERROR = 'conflict_error';
+exports.conflictError = message => internalError(message, exports.CONFLICT_ERROR);
+
 exports.UNAUTHORIZED_ERROR = 'unauthorized_error';
 exports.unauthorizedError = message => internalError(message, exports.UNAUTHORIZED_ERROR);
 
@@ -12,8 +15,8 @@ exports.forbiddenError = message => internalError(message, exports.FORBIDDEN_ERR
 exports.BAD_REQUEST_ERROR = 'bad_request_error';
 exports.invalidInputError = message => internalError(message, exports.BAD_REQUEST_ERROR);
 
-exports.ALBUMS_API_ERROR = 'albums_api_error';
-exports.albumsApiError = message => internalError(message, exports.ALBUMS_API_ERROR);
+exports.NOT_FOUND_ERROR = 'not_found_error';
+exports.notFoundError = message => internalError(message, exports.NOT_FOUND_ERROR);
 
 exports.DATABASE_ERROR = 'database_error';
 exports.databaseError = err =>

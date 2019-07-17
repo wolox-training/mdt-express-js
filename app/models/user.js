@@ -52,6 +52,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
+  User.associate = models => {
+    User.hasMany(models.Album);
+  };
+
   User.createWithHashedPassword = user => {
     const hashedPassword = bcrypt.hashSync(user.password, Number(saltRounds));
     return User.create({ ...user, password: hashedPassword })
@@ -65,9 +69,9 @@ module.exports = (sequelize, DataTypes) => {
       });
   };
 
-  User.getAll = data =>
+  User.getAll = (page, pageSize) =>
     User.findAll({
-      ...paginate(data)
+      ...paginate(page, pageSize)
     })
       .then(users => users)
       .catch(err => {
