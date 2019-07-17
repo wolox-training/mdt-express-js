@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
         where: { userId: data.userId, albumId: data.albumId }
       });
       if (existentAlbum) {
-        logger.error(`You already have the album "${existentAlbum.title}`);
+        logger.error(`You already have the album "${existentAlbum.title}"`);
         return conflictError(`You already have the album "${existentAlbum.title}"`);
       }
       return await Album.create(data);
