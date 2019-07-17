@@ -40,8 +40,11 @@ module.exports = (sequelize, DataTypes) => {
 
   Album.buyAlbum = async data => {
     try {
-      const existentAlbum = await Album.findOne({ where: { userId: data.userId, albumId: data.albumId } });
+      const existentAlbum = await Album.findOne({
+        where: { userId: data.userId, albumId: data.albumId }
+      });
       if (existentAlbum) {
+        logger.error(`You already have the album "${existentAlbum.title}"`);
         return conflictError(`You already have the album "${existentAlbum.title}"`);
       }
       return await Album.create(data);

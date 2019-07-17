@@ -1,9 +1,9 @@
 const server = require('../app'),
-  { User } = require('../app/models'),
+  { User, Album } = require('../app/models'),
   config = require('../config'),
   { url } = config.common.albumsApi,
   request = require('supertest'),
-  // dictum = require('dictum.js'),
+  dictum = require('dictum.js'),
   { expect } = require('chai'),
   nock = require('nock');
 
@@ -76,41 +76,43 @@ describe('albums api tests', () => {
           expect(res.body.albumId).to.equal(1);
           expect(res.body.title).to.equal('quidem molestiae enim');
           done();
+          dictum.chai(
+            res,
+            'This endpoint get the albums from an external API and let that a user to buy an album'
+          );
         })
     );
   });
 
-  /* test('purchaseAlbum with jwt and album already purchased by user returns conflict error', done => {
-    nock(process.env.DB_HOST)
-      .post('/albums/1')
-      .reply({
-        albumId: 1,
-        title: 'quidem molestiae enim',
-        userId: 1
+  test.only('purchaseAlbum with jwt and album already purchased returns conflict error', done => {
+    nock(url)
+      .get('/albums/1')
+      .times(2)
+      .reply(200, {
+        userId: 1,
+        id: 1,
+        title: 'quidem molestiae enim'
       });
 
-    request(server)
-      .post('/users/sessions')
-      .query({
-        email: 'foo.bar@wolox.com.ar',
-        password: 'Wolox1189!'
-      })
-      .end((_, response) =>
+    return User.createWithHashedPassword(mockedUser)
+      .then(() => Album.create({ userId: 1, albumId: 1, title: 'quidem molestiae enim' }))
+      .then(
         request(server)
-          .post('/albums/1')
-          .set('Authorization', response.body.token)
-          .end(() =>
+          .post('/users/sessions')
+          .query({
+            email: 'foo.bar@wolox.com.ar',
+            password: 'Wolox1189!'
+          })
+          .end((_, response) =>
             request(server)
               .post('/albums/1')
               .set('Authorization', response.body.token)
               .end((err, res) => {
-                expect(res.body).toEqual({
-                  internalCode: 'conflict_error',
-                  message: 'You already have the album "quidem molestiae enim"'
-                });
+                expect(res.body.message).to.equal('You already have the album "quidem molestiae enim"');
+                expect(res.body.internalCode).to.equal('conflict_error');
                 done();
               })
           )
       );
-  });*/
+  });
 });
