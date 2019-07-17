@@ -84,7 +84,7 @@ describe('albums api tests', () => {
     );
   });
 
-  test.only('purchaseAlbum with jwt and album already purchased returns conflict error', done => {
+  test('purchaseAlbum with jwt and album already purchased returns conflict error', done => {
     nock(url)
       .get('/albums/1')
       .times(2)
@@ -94,25 +94,29 @@ describe('albums api tests', () => {
         title: 'quidem molestiae enim'
       });
 
-    return User.createWithHashedPassword(mockedUser)
-      .then(() => Album.create({ userId: 1, albumId: 1, title: 'quidem molestiae enim' }))
-      .then(
+    return User.createWithHashedPassword(mockedUser).then(() =>
+      Album.create({
+        userId: 1,
+        albumId: 1,
+        title: 'quidem molestiae enim'
+      }).then(
         request(server)
           .post('/users/sessions')
           .query({
             email: 'foo.bar@wolox.com.ar',
             password: 'Wolox1189!'
           })
-          .end((_, response) =>
+          .then(response =>
             request(server)
               .post('/albums/1')
               .set('Authorization', response.body.token)
-              .end((err, res) => {
-                expect(res.body.message).to.equal('You already have the album "quidem molestiae enim"');
+              .then(res => {
                 expect(res.body.internalCode).to.equal('conflict_error');
+                expect(res.body.message).to.equal('You already have the album "quidem molestiae enim"');
                 done();
               })
           )
-      );
+      )
+    );
   });
 });
