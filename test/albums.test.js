@@ -94,7 +94,7 @@ describe('albums api tests', () => {
         title: 'quidem molestiae enim'
       });
 
-    return User.createWithHashedPassword(mockedUser).then(() =>
+    User.createWithHashedPassword(mockedUser).then(() =>
       Album.create({
         userId: 1,
         albumId: 1,
