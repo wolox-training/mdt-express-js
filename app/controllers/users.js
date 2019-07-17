@@ -54,3 +54,13 @@ exports.createUserAdmin = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.invalidateSessions = (req, res, next) =>
+  User.update(
+    { sessionTime: Math.floor(Date.now() / 1000) },
+    { returning: true, plain: true, where: { email: req.decoded.email } }
+  )
+    .then(([, userUpdated]) => {
+      res.status(200).send(userUpdated);
+    })
+    .catch(next);

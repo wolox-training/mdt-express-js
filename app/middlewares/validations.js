@@ -2,6 +2,7 @@ const { check, validationResult } = require('express-validator'),
   jwt = require('jsonwebtoken'),
   { invalidInputError, forbiddenError, unauthorizedError, notFoundError } = require('../errors'),
   { isValidEmail } = require('../helpers'),
+  logger = require('../logger'),
   { User } = require('../models'),
   { getAll } = require('../services/albums'),
   config = require('../../config'),
@@ -22,6 +23,14 @@ exports.checkToken = (req, res, next) => {
     if (err) {
       throw forbiddenError(err.message);
     } else {
+      const issuer = decoded.iat;
+      const { id } = decoded;
+      User.findOne({ where: { id } }).then(user => {
+        if (user.sessionTime && user.sessionTime >= issuer) {
+          logger.error('Invalid token');
+          next(unauthorizedError('Invalid token'));
+        }
+      });
       req.decoded = decoded;
       next();
     }

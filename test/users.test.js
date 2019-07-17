@@ -249,4 +249,25 @@ describe('users api tests', () => {
           .set('Authorization', res.body.token)
           .then(response => expect(JSON.parse(response.text).admin).toEqual(true))
       ));
+
+  /* test.only('invalidate Sessions with jwt invalidates all sessions active', () =>
+    User.createWithHashedPassword(mockedUser).then(() =>
+      request(server)
+        .post('/users/sessions')
+        .query({
+          email: 'manuel.tuero@wolox.com.ar',
+          password: 'Wolox1189!'
+        })
+        .then(res =>
+          request(server)
+            .post('/users/sessions/invalidate_all')
+            .set('Authorization', res.body.token)
+            .then(() =>
+              request(server)
+                .get('/users')
+                .set('Authorization', res.body.token)
+                .then(response => console.log('******************************* response: ', response))
+            )
+        )
+    )); */
 });
