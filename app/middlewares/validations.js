@@ -2,6 +2,7 @@ const { check, validationResult } = require('express-validator'),
   jwt = require('jsonwebtoken'),
   { invalidInputError, forbiddenError, unauthorizedError, notFoundError } = require('../errors'),
   { isValidEmail } = require('../helpers'),
+  { User } = require('../models'),
   { getAll } = require('../services/albums'),
   config = require('../../config'),
   { secret } = config.common.session;
@@ -88,5 +89,14 @@ exports.albumIdValidations = async (req, res, next) => {
     }
   } catch (err) {
     next(notFoundError('Cannot get the album, API error has occurred'));
+  }
+};
+
+exports.userExists = async (req, res, next) => {
+  const user = await User.findOne({ where: { id: req.params.id } });
+  if (user) {
+    next();
+  } else {
+    next(notFoundError(`The id ${req.params.id} user's albums could not be obtained`));
   }
 };
