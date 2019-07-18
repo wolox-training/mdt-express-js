@@ -41,7 +41,6 @@ exports.mockPurchaseAlbum = () => {
 };
 
 exports.mockAlbumNotPurchasedError = id => {
-  console.log(`********************************* /users/albums/${id}/photos`);
   nock(url)
     .get(`/users/albums/${id}/photos`)
     .replyWithError({
@@ -58,16 +57,10 @@ exports.mockAlbumPhotos = id => {
       title: 'accusamus beatae ad facilis cum similique qui sunt',
       url: 'https://via.placeholder.com/600/92c952',
       thumbnailUrl: 'https://via.placeholder.com/150/92c952'
-    },
-    {
-      albumId: 2,
-      id: 51,
-      thumbnailUrl: 'https://via.placeholder.com/150/8e973b',
-      title: 'non sunt voluptatem placeat consequuntur rem incidunt',
-      url: 'https://via.placeholder.com/600/8e973b'
     }
   ];
+
   nock(url)
-    .get(`/users/albums/${id}/photos`)
-    .reply(200, photos[id - 1]);
+    .get(`/photos?albumId=${id}`)
+    .reply(200, photos);
 };
