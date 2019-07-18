@@ -41,7 +41,7 @@ const config = {
     session: {
       header_name: 'authorization',
       secret: process.env.NODE_API_SESSION_SECRET,
-      expirationHours: process.env.TOKEN_EXPIRATION_HOURS
+      expirationInSeconds: process.env.TOKEN_EXPIRATION_SECONDS
     },
     albumsApi: {
       url: process.env.BASE_URL
