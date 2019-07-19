@@ -42,6 +42,10 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: false,
         type: DataTypes.BOOLEAN
+      },
+      sessionTime: {
+        field: 'session_time',
+        type: DataTypes.BIGINT
       }
     },
     {

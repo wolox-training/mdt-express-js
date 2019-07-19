@@ -6,7 +6,7 @@ const { healthCheck } = require('./controllers/healthCheck'),
     getAlbumsByUser,
     getPurchasedAlbumPhotos
   } = require('./controllers/albums'),
-  { createUser, login, getUsers, createUserAdmin } = require('./controllers/users'),
+  { createUser, login, getUsers, createUserAdmin, invalidateSessions } = require('./controllers/users'),
   {
     userParamsValidations,
     sessionParamsValidations,
@@ -26,6 +26,7 @@ exports.init = app => {
   app.get('/users', checkToken, getUsers);
   app.get('/users/:id/albums', [checkToken, userExists], getAlbumsByUser);
   app.post('/users/sessions', sessionParamsValidations, login);
+  app.post('/users/sessions/invalidate_all', checkToken, invalidateSessions);
   app.get('/users/albums/:id/photos', checkToken, getPurchasedAlbumPhotos);
   app.post('/admin/users', [checkToken, adminValidations, userParamsValidations], createUserAdmin);
 };

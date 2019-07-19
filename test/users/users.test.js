@@ -245,4 +245,31 @@ describe('users api tests', () => {
           .set('Authorization', res.body.token)
           .then(response => expect(JSON.parse(response.text).admin).toEqual(true))
       ));
+
+  test('invalidate Sessions with jwt invalidates all sessions active', done =>
+    User.createWithHashedPassword(mockedUser).then(user =>
+      request(server)
+        .post('/users/sessions')
+        .query({
+          email: user.email,
+          password: 'Wolox1189!'
+        })
+        .then(res =>
+          request(server)
+            .post('/users/sessions/invalidate_all')
+            .set('Authorization', res.body.token)
+            .then(() =>
+              request(server)
+                .get('/users')
+                .set('Authorization', res.body.token)
+                .then(response => {
+                  expect(response.body).toEqual({
+                    message: 'Invalid token',
+                    internal_code: 'unauthorized_error'
+                  });
+                  done();
+                })
+            )
+        )
+    ));
 });
