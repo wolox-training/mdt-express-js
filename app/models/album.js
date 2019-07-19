@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
         where: { userId: data.userId, albumId: data.albumId }
       });
       if (existentAlbum) {
-        logger.error(`You already have the album "${existentAlbum.title}`);
+        logger.error(`You already have the album "${existentAlbum.title}"`);
         return conflictError(`You already have the album "${existentAlbum.title}"`);
       }
       return await Album.create(data);
@@ -50,23 +50,27 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
 
-  Album.findAlbumsByUser = async req => {
-    try {
-      if (!req.decoded.admin && Number(req.params.id) !== req.decoded.id) {
-        logger.error('You must have admin permissions to get the albums of another user');
-        return unauthorizedError('You must have admin permissions to get the albums of another user');
-      }
-      logger.info(`Searching the albums of user ${req.params.id}...`);
-      return await Album.findAll({
-        where: {
-          userId: req.params.id
-        }
-      });
-    } catch (err) {
-      logger.error('A database error has occurred during the search of albums');
-      throw databaseError(err);
+  Album.findAlbumsByUser = req => {
+    if (!req.decoded.admin && Number(req.params.id) !== req.decoded.id) {
+      logger.error('You must have admin permissions to get the albums of another user');
+      throw unauthorizedError('You must have admin permissions to get the albums of another user');
     }
+    logger.info(`Searching the albums of user ${req.params.id}...`);
+    return Album.findAll({ where: { userId: req.params.id } })
+      .then(albums => albums)
+      .catch(err => {
+        logger.error('A database error has occurred during the search of albums');
+        throw databaseError(err);
+      });
   };
+
+  Album.findAlbum = query =>
+    Album.findOne({ where: query })
+      .then(album => album)
+      .catch(err => {
+        logger.error('A database error has occurred during the search of the album');
+        throw databaseError(err);
+      });
 
   return Album;
 };

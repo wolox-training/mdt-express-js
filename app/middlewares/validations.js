@@ -84,16 +84,20 @@ exports.adminValidations = (req, res, next) => {
 };
 
 exports.albumIdValidations = async (req, res, next) => {
-  const album = await getAll(`albums/${req.params.id}`);
-  if (Object.keys(album).length > 0) {
-    req.purchase = {
-      userId: req.decoded.id,
-      albumId: album.id,
-      title: album.title
-    };
-    next();
-  } else {
-    next(notFoundError('Cannot get the album, please review the id'));
+  try {
+    const album = await getAll(`albums/${req.params.id}`);
+    if (album.id) {
+      req.purchase = {
+        userId: req.decoded.id,
+        albumId: album.id,
+        title: album.title
+      };
+      next();
+    } else {
+      next(notFoundError('Cannot get the album, please review the id'));
+    }
+  } catch (err) {
+    next(notFoundError('Cannot get the album, API error has occurred'));
   }
 };
 

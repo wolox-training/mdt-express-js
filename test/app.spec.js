@@ -7,7 +7,12 @@ const fs = require('fs'),
 const tables = Object.values(models.sequelize.models);
 
 const truncateTable = model =>
-  model.destroy({ truncate: true, cascade: true, force: true, restartIdentity: true });
+  model.destroy({
+    truncate: true,
+    cascade: true,
+    force: true,
+    restartIdentity: true
+  });
 
 const truncateDatabase = () => Promise.all(tables.map(truncateTable));
 
