@@ -6,7 +6,7 @@ node_js:
 sudo: true
 
 env:
-  - CXX=g++-4.8 NODE_ENV=testing DB_HOST=localhost DB_USERNAME=wtraining DB_NAME_TEST=db_wtraining_test BASE_URL=https://jsonplaceholder.typicode.com/ PASSWORD_SALT_ROUNDS=10 NODE_API_SESSION_SECRET=some-super-secret
+  - CXX=g++-4.8 NODE_ENV=testing DB_HOST=localhost DB_USERNAME=wtraining DB_NAME_TEST=db_wtraining_test BASE_URL=https://jsonplaceholder.typicode.com/ PASSWORD_SALT_ROUNDS=10 NODE_API_SESSION_SECRET=some-super-secret TOKEN_EXPIRATION_SECONDS=86400
 
 addons:
   apt:
