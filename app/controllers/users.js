@@ -1,10 +1,11 @@
 const { User } = require('../models'),
   bcrypt = require('bcrypt'),
+  moment = require('moment'),
   jwt = require('jsonwebtoken'),
   errors = require('../errors'),
   logger = require('../logger'),
   config = require('../../config'),
-  { secret } = config.common.session;
+  { secret, expirationInSeconds } = config.common.session;
 
 exports.createUser = (req, res, next) =>
   User.createWithHashedPassword(req.query)
@@ -22,9 +23,14 @@ exports.login = async (req, res, next) => {
     if (user) {
       const matches = await bcrypt.compare(req.query.password, user.password);
       if (matches) {
-        const token = jwt.sign({ id: user.id, email: user.email, admin: user.admin }, secret);
+        const token = jwt.sign({ id: user.id, email: user.email, admin: user.admin }, secret, {
+          expiresIn: expirationInSeconds
+        });
         res.status(201).send({
           message: 'Authentication successful!',
+          expirationDate: moment()
+            .add(expirationInSeconds, 'seconds')
+            .unix(),
           token
         });
       }
