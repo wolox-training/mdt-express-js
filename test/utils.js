@@ -40,27 +40,16 @@ exports.mockPurchaseAlbum = () => {
     });
 };
 
-exports.mockAlbumNotPurchasedError = id => {
+exports.mockAlbumPhotos = () => {
   nock(url)
-    .get(`/users/albums/${id}/photos`)
-    .replyWithError({
-      message: `The album id ${id} photos could not be obtained`,
-      internal_code: 'not_found_error'
-    });
-};
-
-exports.mockAlbumPhotos = id => {
-  const photos = [
-    {
-      albumId: 1,
-      id: 1,
-      title: 'accusamus beatae ad facilis cum similique qui sunt',
-      url: 'https://via.placeholder.com/600/92c952',
-      thumbnailUrl: 'https://via.placeholder.com/150/92c952'
-    }
-  ];
-
-  nock(url)
-    .get(`/photos?albumId=${id}`)
-    .reply(200, photos);
+    .get('/photos?albumId=1')
+    .reply(200, [
+      {
+        albumId: 1,
+        id: 1,
+        title: 'accusamus beatae ad facilis cum similique qui sunt',
+        url: 'https://via.placeholder.com/600/92c952',
+        thumbnailUrl: 'https://via.placeholder.com/150/92c952'
+      }
+    ]);
 };

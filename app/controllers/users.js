@@ -27,7 +27,6 @@ exports.login = async (req, res, next) => {
           message: 'Authentication successful!',
           token
         });
-        return;
       }
     }
     logger.error('Incorrect username or password');

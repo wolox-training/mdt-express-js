@@ -26,6 +26,6 @@ exports.init = app => {
   app.get('/users', checkToken, getUsers);
   app.get('/users/:id/albums', [checkToken, userExists], getAlbumsByUser);
   app.post('/users/sessions', sessionParamsValidations, login);
-  app.get('/users/albums/:id/photos', [checkToken, albumIdValidations], getPurchasedAlbumPhotos);
+  app.get('/users/albums/:id/photos', checkToken, getPurchasedAlbumPhotos);
   app.post('/admin/users', [checkToken, adminValidations, userParamsValidations], createUserAdmin);
 };

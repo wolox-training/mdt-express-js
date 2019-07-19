@@ -33,26 +33,19 @@ exports.getAlbumsByUser = (req, res, next) =>
 
 exports.getPurchasedAlbumPhotos = async (req, res, next) => {
   try {
-    const albumId = req.params.id;
-    let response = {};
-    let query = {};
-    if (req.decoded.admin) {
-      query = { albumId };
-    } else {
-      query = { albumId, userId: req.decoded.id };
+    const query = { albumId: req.params.id };
+    if (!req.decoded.admin) {
+      query.userId = req.decoded.id;
     }
-    const album = await Album.findOne({
-      where: query
-    });
+    const album = await Album.findAlbum(query);
     if (album) {
-      logger.info(`Finding the photos of album ${album} ...`);
-      response = await getAll(`photos?albumId=${albumId}`);
-    } else {
-      logger.error(`The album id ${albumId} photos could not be obtained`);
-      throw notFoundError(`The album id ${albumId} photos could not be obtained`);
+      logger.info(`Finding the photos of album ${album.albumId} ...`);
+      const photos = await getAll(`photos?albumId=${query.albumId}`);
+      return res.status(200).send(photos);
     }
-    res.status(200).send(response);
+    logger.error(`The album id ${query.albumId} photos could not be obtained`);
+    return next(notFoundError(`The album id ${query.albumId} photos could not be obtained`));
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
