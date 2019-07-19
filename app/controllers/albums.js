@@ -41,7 +41,7 @@ exports.getPurchasedAlbumPhotos = async (req, res, next) => {
     if (album) {
       logger.info(`Finding the photos of album ${album.albumId} ...`);
       const photos = await getAll(`photos?albumId=${query.albumId}`);
-      return res.status(200).send(photos);
+      res.status(200).send(photos);
     }
     logger.error(`The album id ${query.albumId} photos could not be obtained`);
     return next(notFoundError(`The album id ${query.albumId} photos could not be obtained`));
