@@ -64,5 +64,13 @@ module.exports = (sequelize, DataTypes) => {
       });
   };
 
+  Album.findAlbum = query =>
+    Album.findOne({ where: query })
+      .then(album => album)
+      .catch(err => {
+        logger.error('A database error has occurred during the search of the album');
+        throw databaseError(err);
+      });
+
   return Album;
 };

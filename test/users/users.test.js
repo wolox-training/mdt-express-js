@@ -1,7 +1,7 @@
-/* eslint-disable max-len */
-const { User } = require('../app/models'),
-  server = require('../app'),
+const { User } = require('../../app/models'),
+  server = require('../../app'),
   dictum = require('dictum.js'),
+  { adminUser } = require('../utils'),
   request = require('supertest');
 
 const mockedUser = {
@@ -9,14 +9,6 @@ const mockedUser = {
   lastName: 'Tuero',
   email: 'manuel.tuero@wolox.com.ar',
   password: 'Wolox1189!'
-};
-
-const adminUser = {
-  firstName: 'admin',
-  lastName: 'pro',
-  email: 'admin@wolox.com',
-  password: 'Wolox1189!',
-  admin: true
 };
 
 describe('users api tests', () => {
@@ -212,7 +204,7 @@ describe('users api tests', () => {
           )
       ));
 
-  test('createUserAdmin with jwt and all params and user admin and another existent user modify the regular user permissions to admin', () =>
+  test('createUserAdmin with jwt and user admin and another existent user modify regular permissions to admin', () =>
     User.createWithHashedPassword(adminUser)
       .then(User.createWithHashedPassword(mockedUser))
       .then(() =>

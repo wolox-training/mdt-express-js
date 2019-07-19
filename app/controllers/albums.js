@@ -1,4 +1,6 @@
 const { getAll, getAlbumPhotos } = require('../services/albums'),
+  logger = require('../logger'),
+  { notFoundError } = require('../errors'),
   { Album } = require('../models');
 
 exports.getAlbums = async (req, res, next) => {
@@ -28,3 +30,22 @@ exports.getAlbumsByUser = (req, res, next) =>
   Album.findAlbumsByUser(req)
     .then(albums => res.status(200).send(albums))
     .catch(next);
+
+exports.getPurchasedAlbumPhotos = async (req, res, next) => {
+  try {
+    const query = { albumId: req.params.id };
+    if (!req.decoded.admin) {
+      query.userId = req.decoded.id;
+    }
+    const album = await Album.findAlbum(query);
+    if (album) {
+      logger.info(`Finding the photos of album ${album.albumId} ...`);
+      const photos = await getAll(`photos?albumId=${query.albumId}`);
+      res.status(200).send(photos);
+    }
+    logger.error(`The album id ${query.albumId} photos could not be obtained`);
+    return next(notFoundError(`The album id ${query.albumId} photos could not be obtained`));
+  } catch (err) {
+    return next(err);
+  }
+};
