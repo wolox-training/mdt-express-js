@@ -65,7 +65,7 @@
     "jsonwebtoken": "^8.5.1",
     "jwt-simple": "^0.5.1",
     "nock": "^10.0.6",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^3.1.1",
     "pg": "^7.4.1",
     "sequelize": "^4.34.0",
     "umzug": "^2.1.0"
